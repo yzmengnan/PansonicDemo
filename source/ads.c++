@@ -42,7 +42,7 @@ namespace ADS {
     template<typename T>
     int ADS_COM<T>::read() {
         setPort(addr, data);
-        auto nErr = AdsSyncReadReq(addr.getAddress(), data->c, data->d, data->txSize, data->rx_data.data());
+        auto nErr = AdsSyncReadReq(addr.getAddress(), data->c, data->d, data->rxSize, data->rx_data.data());
         return nErr;
     }
 

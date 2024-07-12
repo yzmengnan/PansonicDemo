@@ -158,6 +158,19 @@ int DRIVE::ARM_DRIVE::motionPB(initializer_list<int32_t> targetPosition) {
 }
 
 int DRIVE::ARM_DRIVE::motionPT(initializer_list<int16_t> targetTorque) {
+    auto err = setOperationMode(OP_MODE::PT) == 0;
+    if (err == 0) {
+        size_t i{};
+        for (const auto &t: targetTorque) {
+            if (i > ADS_DATA::nums::driver_counts) {
+                return 1;
+            }
+            Tx[i++].target_torque = t;
+        }
     return 0;
+    } else {
+        return err;
+    }
+
 }
 

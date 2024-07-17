@@ -7,22 +7,11 @@ int main() {
     auto arm_ads = new ADS::ARM_ADS();
     auto m = DRIVE::ARM_DRIVE(arm_ads);
     m.startSYNC();
+    Sleep(1000);
     m.ENABLE();
-    while (true) {
-        if (_kbhit()) {
-            auto kb = _getch();
-            if (kb == 27)
-                break;
-            else if (kb == 38) {
-                m.motionPT({100});
-            } else if (kb == 40) {
-                m.motionPT({-100});
-            } else {
-                Sleep(200);
-                continue;
-            }
-        }
-    }
+    Sleep(2000);
+    m.motionPT({100});
+    Sleep(2000);
     m.DISABLE();
     return 0;
 }

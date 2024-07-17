@@ -4,12 +4,14 @@
 
 #include <stdexcept>
 #include <format>
+#include <iostream>
 #include "ads.h++"
 
 namespace ADS {
     Addr::Addr() {
         AdsPortOpen();
-        PAddress = nullptr;
+        Address={};
+        PAddress = &Address;
         auto nErr = AdsGetLocalAddress(PAddress);
         if (nErr)
             throw std::runtime_error(std::format("Error: Ads get Address: {}", nErr));
@@ -43,6 +45,7 @@ namespace ADS {
     int ADS_COM<T>::read() {
         setPort(addr, data);
         auto nErr = AdsSyncReadReq(addr.getAddress(), data->c, data->d, data->rxSize, data->rx_data.data());
+//        std::cout<<data->rx_data[0].status_word<<std::endl;
         return nErr;
     }
 
@@ -65,14 +68,16 @@ namespace ADS {
     void ARM_ADS::startSYNC() {
         t1 = std::thread([&]() {
             while (true) {
-                std::lock_guard<std::mutex> guard(*m);
+//                std::lock_guard<std::mutex> guard(*m);
                 this->write();
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
         });
         t2 = std::thread([&]() {
             while (true) {
-                std::lock_guard<std::mutex> guard(*m);
+//                std::lock_guard<std::mutex> guard(*m);
                 this->read();
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
         });
         t1.detach();

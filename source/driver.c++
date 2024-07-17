@@ -43,7 +43,7 @@ int DRIVE::ARM_DRIVE::ENABLE() {
             continue;
         }
         for (auto &child_servo: Tx) { child_servo.control_word = 0x0006; }
-        this_thread::sleep_for(chrono::milliseconds(100));
+        this_thread::sleep_for(chrono::milliseconds(200));
         for (auto child_servo: Rx) { state += static_cast<int>((child_servo.status_word &= 0x21) == 0x21); }
         if (state == ADS_DATA::nums::driver_counts) {
             state = 0;
@@ -52,7 +52,7 @@ int DRIVE::ARM_DRIVE::ENABLE() {
             continue;
         }
         for (auto &child_servo: Tx) { child_servo.control_word = 0x0007; }
-        this_thread::sleep_for(chrono::milliseconds(100));
+        this_thread::sleep_for(chrono::milliseconds(200));
         for (auto child_servo: Rx) { state += static_cast<int>((child_servo.status_word &= 0x23) == 0x23); }
         if (state == ADS_DATA::nums::driver_counts) {
             state = 0;
@@ -96,14 +96,13 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
     if (mode == pMode) {
         return 0;
     }
-
     if (this->enableFlag) {
         this->DISABLE();
     }
     for (auto &d: Tx) {
         d.operation_mode = pMode;
     }
-    this->ENABLE();
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     size_t check_counts{};
     for (const auto &r: Rx) {
         if (r.operation_mode_display == pMode) {
@@ -112,12 +111,12 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
     }
     if (check_counts == ADS_DATA::nums::driver_counts) {
         std::cout << std::format("operation mode:{} change successfully!", (int) pMode) << std::endl;
+        this->ENABLE();
         mode = pMode;
         return 0;
     } else {
-        this->DISABLE();
-        std::cout << "set operation mode failure!" << std::endl;
-        return -1;
+        std::cout << "set operation mode failure! try again!" << std::endl;
+        return  setOperationMode(pMode);
     }
 }
 
@@ -158,7 +157,7 @@ int DRIVE::ARM_DRIVE::motionPB(initializer_list<int32_t> targetPosition) {
 }
 
 int DRIVE::ARM_DRIVE::motionPT(initializer_list<int16_t> targetTorque) {
-    auto err = setOperationMode(OP_MODE::PT) == 0;
+    auto err = setOperationMode(OP_MODE::PT);
     if (err == 0) {
         size_t i{};
         for (const auto &t: targetTorque) {
@@ -166,8 +165,9 @@ int DRIVE::ARM_DRIVE::motionPT(initializer_list<int16_t> targetTorque) {
                 return 1;
             }
             Tx[i++].target_torque = t;
+            std::cout << "torque success!" << std::endl;
         }
-    return 0;
+        return 0;
     } else {
         return err;
     }

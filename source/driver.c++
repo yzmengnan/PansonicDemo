@@ -195,3 +195,21 @@ void DRIVE::ARM_DRIVE::setProfileVelocity(initializer_list<int> rpm) {
     }
 }
 
+void DRIVE::ARM_DRIVE::setMaxSpeed(initializer_list<int> rpm) {
+    size_t i{};
+    for (const auto &r: rpm) {
+        Tx[i++].profile_velocity = r;
+        if (i >= ADS_DATA::nums::driver_counts) {
+            return;
+        }
+    }
+}
+
+std::vector<int> DRIVE::ARM_DRIVE::getPosition() {
+    std::vector<int> res;
+    for(const auto&d:Rx){
+        res.push_back(d.actual_position);
+    }
+    return res;
+}
+

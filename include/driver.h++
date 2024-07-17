@@ -41,6 +41,8 @@ namespace DRIVE {
 
         void setProfileVelocity(initializer_list<int> rpm);
 
+        void setMaxSpeed(initializer_list<int> rpm);
+
         int setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode);
 
         void servoBreak(bool b);
@@ -49,6 +51,7 @@ namespace DRIVE {
 
         int motionPT(initializer_list<int16_t> targetTorque);
 
+        std::vector<int> getPosition();
     private:
         ADS::ARM_ADS *ads_Handle;
         bool syncFlag;

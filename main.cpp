@@ -2,6 +2,7 @@
 #include <conio.h>
 
 #include "driver.h++"
+#include "task.h++"
 
 int main() {
     auto arm_ads = new ADS::ARM_ADS();
@@ -22,5 +23,7 @@ int main() {
     Sleep(5000);
     //servo disable
     m.DISABLE();
+    auto t = TASK::torque_wrench();
+    t.torque_screw_out();
     return 0;
 }

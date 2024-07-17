@@ -30,6 +30,7 @@ namespace DRIVE {
 
         void startSYNC() {
             this->ads_Handle->startSYNC();
+            this->syncFlag = true;
         }
 
         void clearFault();

@@ -32,7 +32,7 @@ namespace ADS {
         ~Addr() {
             AdsPortClose();
         }
-
+        AmsAddr Address;
         PAmsAddr PAddress;
     public:
         Addr(const Addr &) = delete;

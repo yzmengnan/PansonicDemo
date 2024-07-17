@@ -25,7 +25,7 @@ bool DRIVE::ARM_DRIVE::clearFault() {
     for (const auto &r: this->Rx) {
         cnts += (r.status_word & 0b1000) >> 3;
     }
-    return cnts >= 1 ;
+    return cnts >= 1;
 }
 
 int DRIVE::ARM_DRIVE::ENABLE() {
@@ -182,5 +182,16 @@ int DRIVE::ARM_DRIVE::motionPT(initializer_list<int16_t> targetTorque) {
         return err;
     }
 
+}
+
+void DRIVE::ARM_DRIVE::setProfileVelocity(initializer_list<int> rpm) {
+    std::vector<int> rpm_pulses = {};
+    for (const auto &r: rpm) {
+        rpm_pulses.push_back(static_cast<int>((8388608 / 60.0f) * (float) r));
+    }
+    size_t i{};
+    for (auto &r: Tx) {
+        r.profile_velocity = rpm_pulses[i++];
+    }
 }
 

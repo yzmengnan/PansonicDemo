@@ -39,6 +39,8 @@ namespace DRIVE {
 
         void DISABLE();
 
+        void setProfileVelocity(initializer_list<int> rpm);
+
         int setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode);
 
         void servoBreak(bool b);

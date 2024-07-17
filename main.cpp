@@ -12,6 +12,8 @@ int main() {
     Sleep(2000);
     m.motionPT({100});
     Sleep(2000);
+    m.motionPB({0});
+    Sleep(5000);
     m.DISABLE();
     return 0;
 }

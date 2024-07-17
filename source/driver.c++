@@ -165,7 +165,6 @@ int DRIVE::ARM_DRIVE::motionPT(initializer_list<int16_t> targetTorque) {
                 return 1;
             }
             Tx[i++].target_torque = t;
-            std::cout << "torque success!" << std::endl;
         }
         return 0;
     } else {

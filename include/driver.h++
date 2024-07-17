@@ -33,7 +33,7 @@ namespace DRIVE {
             this->syncFlag = true;
         }
 
-        void clearFault();
+        bool clearFault();
 
         int ENABLE();
 

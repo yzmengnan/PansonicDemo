@@ -13,8 +13,19 @@ DRIVE::ARM_DRIVE::ARM_DRIVE(ADS::ARM_ADS *ads) : ads_Handle{ads}, Tx{ads_Handle-
     cout << "ARM DRIVE BUILT!" << endl;
 }
 
-void DRIVE::ARM_DRIVE::clearFault() {
-
+bool DRIVE::ARM_DRIVE::clearFault() {
+    for (auto &c: this->Tx) { c.control_word |= 0x80; }
+    this->ads_Handle->write();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    for (auto &c: this->Tx) { c.control_word &= ~0x80; }
+    this->ads_Handle->write();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    this->ads_Handle->read();
+    size_t cnts{};
+    for (const auto &r: this->Rx) {
+        cnts += (r.status_word & 0b1000) >> 3;
+    }
+    return cnts >= 1 ;
 }
 
 int DRIVE::ARM_DRIVE::ENABLE() {
@@ -116,7 +127,7 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
         return 0;
     } else {
         std::cout << "set operation mode failure! try again!" << std::endl;
-        return  setOperationMode(pMode);
+        return setOperationMode(pMode);
     }
 }
 
@@ -125,7 +136,7 @@ void DRIVE::ARM_DRIVE::servoBreak(bool b) {
 }
 
 int DRIVE::ARM_DRIVE::motionPB(initializer_list<int32_t> targetPosition) {
-    auto err = setOperationMode(OP_MODE::PP) == 0;
+    auto err = setOperationMode(OP_MODE::PP);
     if (err == 0) {
         size_t i{};
         for (const auto &t: targetPosition) {

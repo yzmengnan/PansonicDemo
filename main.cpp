@@ -14,16 +14,17 @@ int main() {
     m.ENABLE();
     Sleep(2000);
     //use profile torque mode
-    m.motionPT({100});
+    m.setMaxSpeed({100});
+    m.motionPT({-1000});
     Sleep(2000);
     //set rpm=100
     m.setProfileVelocity({100});
     //use profile position mode
-    m.motionPB({0});
-    Sleep(5000);
+//    m.motionPB({0});
+//    Sleep(5000);
     //servo disable
     m.DISABLE();
     auto t = TASK::torque_wrench();
-    t.torque_screw_out();
+//    t.torque_screw_out();
     return 0;
 }

@@ -29,6 +29,10 @@ namespace TASK {
             min = -2000000,
             max = 20000000
         };
+        enum DIR {
+            forward = false,
+            backward = true
+        };
     public:
         torque_wrench() {
             std::cout << "torque wrench built" << std::endl;
@@ -37,37 +41,33 @@ namespace TASK {
         int torque_screw_in() {
             std::cout << "start torque wrench tool screw in" << std::endl;
             m->setMaxSpeed({200});
-            m->motionPB({100});
-            if (isReached(true)) {
-                return 0;
-            } else {
-                return torque_screw_in();
+            short torque_value{100};
+            while (isReached(DIR::forward)) {
+                m->motionPT({torque_value});
+                if (torque_value <= 1000) {
+                    torque_value += 20;
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
             }
+            return 0;
         }
 
         int torque_screw_out() {
             std::cout << "start torque wrench tool screw out" << std::endl;
             m->setMaxSpeed({200});
-            m->motionPB({100});
-            if (isReached(false)) {
-                return 0;
-            } else {
-                return torque_screw_out();
+            short torque_value{100};
+            while (isReached(DIR::backward)) {
+                m->motionPT({torque_value});
+                if (torque_value <= 1000) {
+                    torque_value += 20;
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                }
             }
+            return 0;
         }
 
-        bool isReached(bool dir) {
-            if (dir) {
-                if (this->m->getPosition()[0] > LIMIT::max) {
-                    return true;
-                }
-                return false;
-            } else {
-                if (this->m->getPosition()[0] < LIMIT::min) {
-                    return true;
-                }
-                return false;
-            }
+        bool isReached(DIR dir) {
+            return dir ? (this->m->getPosition()[0] > LIMIT::max) : (this->m->getPosition()[0] < LIMIT::min);
         }
 
 

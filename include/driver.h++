@@ -16,6 +16,7 @@ namespace DRIVE {
     private:
         enum OP_MODE {
             PP = 1,
+            PV = 3,
             PT = 4
         };
     public:
@@ -50,6 +51,8 @@ namespace DRIVE {
         int motionPB(initializer_list<int32_t> targetPosition);
 
         int motionPT(initializer_list<int16_t> targetTorque);
+
+        int motionPV(initializer_list<int32_t> targetVelocity);
 
         std::vector<int> getPosition();
     private:

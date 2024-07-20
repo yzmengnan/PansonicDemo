@@ -2,11 +2,10 @@
 // Created by 91418 on 24-7-11.
 //
 
-#include <format>
 #include "driver.h++"
+#include <format>
 
-DRIVE::ARM_DRIVE::ARM_DRIVE(ADS::ARM_ADS *ads) : ads_Handle{ads}, Tx{ads_Handle->data->tx_data},
-                                                 Rx{ads_Handle->data->rx_data} {
+DRIVE::ARM_DRIVE::ARM_DRIVE(ADS::ARM_ADS *ads) : ads_Handle{ads}, Tx{ads_Handle->data->tx_data}, Rx{ads_Handle->data->rx_data} {
     syncFlag = false;
     enableFlag = false;
     mode = {};
@@ -22,9 +21,7 @@ bool DRIVE::ARM_DRIVE::clearFault() {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     this->ads_Handle->read();
     size_t cnts{};
-    for (const auto &r: this->Rx) {
-        cnts += (r.status_word & 0b1000) >> 3;
-    }
+    for (const auto &r: this->Rx) { cnts += (r.status_word & 0b1000) >> 3; }
     return cnts >= 1;
 }
 
@@ -88,7 +85,6 @@ int DRIVE::ARM_DRIVE::ENABLE() {
     servoBreak(false);
     cerr << "Servo Enable Failure......" << '\n';
     return -1002;
-
 }
 
 void DRIVE::ARM_DRIVE::DISABLE() {
@@ -104,21 +100,13 @@ void DRIVE::ARM_DRIVE::DISABLE() {
 }
 
 int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
-    if (mode == pMode) {
-        return 0;
-    }
-    if (this->enableFlag) {
-        this->DISABLE();
-    }
-    for (auto &d: Tx) {
-        d.operation_mode = pMode;
-    }
+    if (mode == pMode) { return 0; }
+    if (this->enableFlag) { this->DISABLE(); }
+    for (auto &d: Tx) { d.operation_mode = pMode; }
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     size_t check_counts{};
     for (const auto &r: Rx) {
-        if (r.operation_mode_display == pMode) {
-            check_counts++;
-        }
+        if (r.operation_mode_display == pMode) { check_counts++; }
     }
     if (check_counts == ADS_DATA::nums::driver_counts) {
         std::cout << std::format("operation mode:{} change successfully!", (int) pMode) << std::endl;
@@ -131,23 +119,17 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
     }
 }
 
-void DRIVE::ARM_DRIVE::servoBreak(bool b) {
-
-}
+void DRIVE::ARM_DRIVE::servoBreak(bool b) {}
 
 int DRIVE::ARM_DRIVE::motionPB(initializer_list<int32_t> targetPosition) {
     auto err = setOperationMode(OP_MODE::PP);
     if (err == 0) {
         size_t i{};
         for (const auto &t: targetPosition) {
-            if (i > ADS_DATA::nums::driver_counts) {
-                return 1;
-            }
+            if (i > ADS_DATA::nums::driver_counts) { return 1; }
             Tx[i++].target_position = t;
         }
-        for (auto &d: Tx) {
-            d.control_word |= 0x10;
-        }
+        for (auto &d: Tx) { d.control_word |= 0x10; }
         this_thread::sleep_for(std::chrono::milliseconds(100));
         int statusReadyCount{};
         for (const auto &child_servo: Rx) {
@@ -172,44 +154,46 @@ int DRIVE::ARM_DRIVE::motionPT(initializer_list<int16_t> targetTorque) {
     if (err == 0) {
         size_t i{};
         for (const auto &t: targetTorque) {
-            if (i > ADS_DATA::nums::driver_counts) {
-                return 1;
-            }
+            if (i > ADS_DATA::nums::driver_counts) { break; }
             Tx[i++].target_torque = t;
         }
         return 0;
     } else {
         return err;
     }
+}
 
+int DRIVE::ARM_DRIVE::motionPV(initializer_list<int32_t> targetVelocity) {
+    auto err = setOperationMode((OP_MODE::PV));
+    if (err == 0) {
+        size_t i{};
+        for (const auto &v: targetVelocity) {
+            if (i > ADS_DATA::nums::driver_counts) { break; }
+            Tx[i++].target_velocity = v;
+        }
+        return 0;
+    } else {
+        return err;
+    }
 }
 
 void DRIVE::ARM_DRIVE::setProfileVelocity(initializer_list<int> rpm) {
     std::vector<int> rpm_pulses = {};
-    for (const auto &r: rpm) {
-        rpm_pulses.push_back(static_cast<int>((8388608 / 60.0f) * (float) r));
-    }
+    for (const auto &r: rpm) { rpm_pulses.push_back(static_cast<int>((8388608 / 60.0f) * (float) r)); }
     size_t i{};
-    for (auto &r: Tx) {
-        r.profile_velocity = rpm_pulses[i++];
-    }
+    for (auto &r: Tx) { r.profile_velocity = rpm_pulses[i++]; }
 }
 
 void DRIVE::ARM_DRIVE::setMaxSpeed(initializer_list<int> rpm) {
     size_t i{};
     for (const auto &r: rpm) {
         Tx[i++].max_velocity = r;
-        if (i >= ADS_DATA::nums::driver_counts) {
-            return;
-        }
+        if (i >= ADS_DATA::nums::driver_counts) { return; }
     }
 }
 
 std::vector<int> DRIVE::ARM_DRIVE::getPosition() {
     std::vector<int> res;
-    for (const auto &d: Rx) {
-        res.push_back(d.actual_position);
-    }
+    for (const auto &d: Rx) { res.push_back(d.actual_position); }
     return res;
 }
-

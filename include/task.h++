@@ -28,7 +28,7 @@ namespace TASK {
 
     public:
         torque_wrench() { std::cout << "torque wrench built" << std::endl; }
-        torque_wrench(std::shared_ptr<DRIVE::ARM_DRIVE> m) : task(m) { std::cout << "torque wrench built" << std::endl; }
+        torque_wrench(std::shared_ptr<DRIVE::ARM_DRIVE> m_ptr) : task(m_ptr) { std::cout << "torque wrench built" << std::endl; }
 
         int torque_screw_in() {
             std::cout << "start torque wrench tool screw in" << std::endl;

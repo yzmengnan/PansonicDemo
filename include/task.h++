@@ -41,6 +41,7 @@ namespace TASK {
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
             }
+            std::cout<<"reached catch position"<<std::endl;
             m->DISABLE();
             return 0;
         }
@@ -56,6 +57,7 @@ namespace TASK {
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
             }
+            std::cout<<"reached release position"<<std::endl;
             m->DISABLE();
             return 0;
         }

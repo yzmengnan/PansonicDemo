@@ -10,8 +10,8 @@ target_link_libraries(ADS ${PROJECT_SOURCE_DIR}/lib/TcAdsDll.lib )
 add_library(driver source/driver.c++)
 target_link_libraries(driver ADS)
 
-add_executable(Single_Demo main.cpp)
-target_link_libraries(Single_Demo driver)
+add_executable(Catch catch.cpp)
+target_link_libraries(Catch driver)
 
 add_executable(Jogging continuousJogging.cpp)
 target_link_libraries(Jogging driver)

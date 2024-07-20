@@ -12,3 +12,6 @@ target_link_libraries(driver ADS)
 
 add_executable(Single_Demo main.cpp)
 target_link_libraries(Single_Demo driver)
+
+add_executable(Jogging continuousJogging.cpp)
+target_link_libraries(Jogging driver)

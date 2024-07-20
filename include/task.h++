@@ -15,9 +15,7 @@ namespace TASK {
             m = std::make_shared<DRIVE::ARM_DRIVE>(arm_ads);
         }
 
-        task(std::shared_ptr<DRIVE::ARM_DRIVE> m) : m{m} {
-
-        }
+        task(std::shared_ptr<DRIVE::ARM_DRIVE> m) : m{m} {}
 
     protected:
         std::shared_ptr<DRIVE::ARM_DRIVE> m;
@@ -25,53 +23,47 @@ namespace TASK {
 
     using tw = class torque_wrench : public task {
     private:
-        enum LIMIT {
-            min = -2000000,
-            max = 20000000
-        };
-        enum DIR {
-            forward = false,
-            backward = true
-        };
+        enum LIMIT { max = -16134627, min = -7838708 };
+        enum DIR { forward = false, backward = true };
+
     public:
-        torque_wrench() {
-            std::cout << "torque wrench built" << std::endl;
-        }
+        torque_wrench() { std::cout << "torque wrench built" << std::endl; }
+        torque_wrench(std::shared_ptr<DRIVE::ARM_DRIVE> m) : task(m) { std::cout << "torque wrench built" << std::endl; }
 
         int torque_screw_in() {
             std::cout << "start torque wrench tool screw in" << std::endl;
-            m->setMaxSpeed({200});
-            short torque_value{100};
+            m->setMaxSpeed({600});
+            short torque_value{300};
             while (isReached(DIR::forward)) {
                 m->motionPT({torque_value});
                 if (torque_value <= 1000) {
                     torque_value += 20;
-                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
             }
+            m->DISABLE();
             return 0;
         }
 
         int torque_screw_out() {
             std::cout << "start torque wrench tool screw out" << std::endl;
-            m->setMaxSpeed({200});
-            short torque_value{100};
+            m->setMaxSpeed({1000});
+            short torque_value{-700};
             while (isReached(DIR::backward)) {
                 m->motionPT({torque_value});
-                if (torque_value <= 1000) {
-                    torque_value += 20;
-                    std::this_thread::sleep_for(std::chrono::seconds(1));
+                if (torque_value >= -1000) {
+                    torque_value -= 20;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
             }
+            m->DISABLE();
             return 0;
         }
 
         bool isReached(DIR dir) {
-            return dir ? (this->m->getPosition()[0] > LIMIT::max) : (this->m->getPosition()[0] < LIMIT::min);
+            return dir ? this->m->getPosition()[0] >= LIMIT::max : this->m->getPosition()[0] <= LIMIT::min;
         }
-
-
     };
-}
+}// namespace TASK
 
-#endif //SINGLE_DEMO_TASK_H
+#endif//SINGLE_DEMO_TASK_H

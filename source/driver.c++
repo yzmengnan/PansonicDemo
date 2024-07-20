@@ -103,7 +103,7 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
     if (mode == pMode) { return 0; }
     if (this->enableFlag) { this->DISABLE(); }
     for (auto &d: Tx) { d.operation_mode = pMode; }
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
     size_t check_counts{};
     for (const auto &r: Rx) {
         if (r.operation_mode_display == pMode) { check_counts++; }
@@ -169,7 +169,7 @@ int DRIVE::ARM_DRIVE::motionPV(initializer_list<int32_t> targetVelocity) {
         size_t i{};
         for (const auto &v: targetVelocity) {
             if (i > ADS_DATA::nums::driver_counts) { break; }
-            Tx[i++].target_velocity = v;
+            Tx[i++].target_velocity = static_cast<int32_t>((float) v * rpm2P);
         }
         return 0;
     } else {

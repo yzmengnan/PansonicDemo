@@ -103,7 +103,7 @@ enum adsAddress {
   input_offset = 0x1f400,
 };
 enum dataSize {
-  data_tx_size = 24,
+  data_tx_size = 28,
   data_rx_size = 20,
 };
 

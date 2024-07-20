@@ -1,10 +1,10 @@
-#include <iostream>
 #include <conio.h>
+#include <iostream>
 
 #include "driver.h++"
 #include "task.h++"
 
-int main() {
+int main(int argc, char **argv) {
     auto arm_ads = new ADS::ARM_ADS();
     auto m = DRIVE::ARM_DRIVE(arm_ads);
     //start sync data
@@ -12,19 +12,13 @@ int main() {
     Sleep(1000);
     //servo enable
     m.ENABLE();
-    Sleep(2000);
-    //use profile torque mode
-    m.setMaxSpeed({100});
-    m.motionPT({-1000});
-    Sleep(2000);
-    //set rpm=100
-    m.setProfileVelocity({100});
-    //use profile position mode
-//    m.motionPB({0});
-//    Sleep(5000);
-    //servo disable
-    m.DISABLE();
-    auto t = TASK::torque_wrench();
-//    t.torque_screw_out();
+    std::shared_ptr<DRIVE::ARM_DRIVE> m_ptr = make_shared<DRIVE::ARM_DRIVE>(m);
+    auto t = TASK::torque_wrench(m_ptr);
+    if (argc >= 2) {
+        auto signal = atoi(argv[1]);
+        if (signal == 1) return t.torque_screw_in();
+        else if (signal == 0)
+            return t.torque_screw_out();
+    }
     return 0;
 }

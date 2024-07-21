@@ -34,14 +34,23 @@ namespace TASK {
             std::cout << "start torque wrench tool screw in" << std::endl;
             m->setMaxSpeed({600});
             short torque_value{300};
+            auto last_position = m->getPosition()[0];
+            size_t counts{};
             while (isReached(DIR::forward)) {
                 m->motionPT({torque_value});
                 if (torque_value <= 1000) {
                     torque_value += 20;
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
+                counts += abs(last_position - m->getPosition()[0]) <= 20000;
+                last_position = m->getPosition()[0];
+                if (counts >= 100) {
+                    std::cout << "stack!" << std::endl;
+                    m->DISABLE();
+                    return 1;
+                }
             }
-            std::cout<<"reached catch position"<<std::endl;
+            std::cout << "reached catch position" << std::endl;
             m->DISABLE();
             return 0;
         }
@@ -57,14 +66,12 @@ namespace TASK {
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
             }
-            std::cout<<"reached release position"<<std::endl;
+            std::cout << "reached release position" << std::endl;
             m->DISABLE();
             return 0;
         }
 
-        bool isReached(DIR dir) {
-            return dir ? this->m->getPosition()[0] >= LIMIT::max : this->m->getPosition()[0] <= LIMIT::min;
-        }
+        bool isReached(DIR dir) { return dir ? this->m->getPosition()[0] >= LIMIT::max : this->m->getPosition()[0] <= LIMIT::min; }
     };
 }// namespace TASK
 

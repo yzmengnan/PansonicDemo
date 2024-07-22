@@ -68,7 +68,7 @@ namespace TASK {
                     torque_value += 20;
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
-                counts += abs(last_position - m->getPosition()[0]) <= 20000;
+                counts += abs(last_position - m->getPosition()[0]) <= 10;
                 last_position = m->getPosition()[0];
                 if (counts >= 100) {
                     std::cout << "stack!" << std::endl;

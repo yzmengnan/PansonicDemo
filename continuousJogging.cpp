@@ -32,14 +32,14 @@ int main() {
     int32_t temp_position{};
     int err{};
     while (true) {
-        //        if (GetAsyncKeyState(VK_UP) & 0x0001) {
-        //            err = m.motionPV({1000});
-        //        } else if (GetAsyncKeyState(VK_DOWN) & 0x0001) {
-        //            err = m.motionPV({-1000});
-        //        } else {
-        //            err = m.motionPV({0});
-        //        }
-        //        if (err != 0) break;
+        if (GetAsyncKeyState(VK_UP) & 0x0001) {
+            err = m.motionPV({1000});
+        } else if (GetAsyncKeyState(VK_DOWN) & 0x0001) {
+            err = m.motionPV({-1000});
+        } else {
+            err = m.motionPV({0});
+        }
+        if (err != 0) break;
         if (GetAsyncKeyState('Q') & 0x8000) { break; }
 
         if (GetAsyncKeyState('H') & 0x8000) {

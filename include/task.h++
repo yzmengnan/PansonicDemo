@@ -25,20 +25,42 @@ namespace TASK {
     private:
         enum LIMIT { max = -16134627, min = -7838708 };
         enum DIR { forward = false, backward = true };
+        int limit_max{};
+        int limit_min{};
+        short torque_dir_0;
+        short torque_dir_1;
 
     public:
-        torque_wrench() { std::cout << "torque wrench built" << std::endl; }
-        torque_wrench(std::shared_ptr<DRIVE::ARM_DRIVE> m_ptr) : task(m_ptr) { std::cout << "torque wrench built" << std::endl; }
+        torque_wrench() {
+            std::cout << "torque wrench built" << std::endl;
+            limit_max = LIMIT::max;
+            limit_min = LIMIT::min;
+            torque_dir_0 = 300;
+            torque_dir_1 = -1000;
+        }
+        explicit torque_wrench(std::shared_ptr<DRIVE::ARM_DRIVE> m_ptr) : task(m_ptr) {
+            std::cout << "torque wrench built" << std::endl;
+            limit_max = LIMIT::max;
+            limit_min = LIMIT::min;
+            torque_dir_0 = 300;
+            torque_dir_1 = -1000;
+        }
+        torque_wrench(std::shared_ptr<DRIVE::ARM_DRIVE> m_ptr, int a, int b, short c, short d) : task(m_ptr) {
+            std::cout << "torque wrench built" << std::endl;
+            limit_max = a;
+            limit_min = b;
+            torque_dir_0 = c;
+            torque_dir_1 = d;
+        }
 
-        int torque_screw_in() {
-            std::cout << "start torque wrench tool screw in" << std::endl;
+        int move_dir_0() {
             m->setMaxSpeed({600});
-            short torque_value{300};
+            short torque_value{200};
             auto last_position = m->getPosition()[0];
             size_t counts{};
             while (isReached(DIR::forward)) {
                 m->motionPT({torque_value});
-                if (torque_value <= 1000) {
+                if (torque_value <= this->torque_dir_0) {
                     torque_value += 20;
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
@@ -50,28 +72,29 @@ namespace TASK {
                     return 1;
                 }
             }
-            std::cout << "reached catch position" << std::endl;
+            std::cout << "reached limited max position" << std::endl;
             m->DISABLE();
             return 0;
         }
 
-        int torque_screw_out() {
-            std::cout << "start torque wrench tool screw out" << std::endl;
+        int move_dir_1() {
             m->setMaxSpeed({1000});
             short torque_value{-700};
             while (isReached(DIR::backward)) {
                 m->motionPT({torque_value});
-                if (torque_value >= -1000) {
+                if (torque_value >= this->torque_dir_1) {
                     torque_value -= 20;
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
             }
-            std::cout << "reached release position" << std::endl;
+            std::cout << "reached limited min position" << std::endl;
             m->DISABLE();
             return 0;
         }
 
-        bool isReached(DIR dir) { return dir ? this->m->getPosition()[0] >= LIMIT::max : this->m->getPosition()[0] <= LIMIT::min; }
+        bool isReached(DIR dir) {
+            return dir ? this->m->getPosition()[0] >= this->limit_max : this->m->getPosition()[0] <= this->limit_min;
+        }
     };
 }// namespace TASK
 

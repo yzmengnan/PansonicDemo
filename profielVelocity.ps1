@@ -1,3 +1,5 @@
 #run pv to get position
-echo "run pv program"
+Write-Output "run pv program"
 & './build/Jogging.exe'
+Write-Output  "the return code is $LASTEXITCODE"
+

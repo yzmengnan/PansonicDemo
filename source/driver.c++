@@ -5,7 +5,8 @@
 #include "driver.h++"
 #include <format>
 
-DRIVE::ARM_DRIVE::ARM_DRIVE(ADS::ARM_ADS *ads) : ads_Handle{ads}, Tx{ads_Handle->data->tx_data}, Rx{ads_Handle->data->rx_data} {
+DRIVE::ARM_DRIVE::ARM_DRIVE(ADS::ARM_ADS *ads)
+    : ads_Handle{ads}, Tx{ads_Handle->data->tx_data}, Rx{ads_Handle->data->rx_data} {
     syncFlag = false;
     enableFlag = false;
     mode = {};
@@ -116,7 +117,7 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
         set_try_counts = 0;
         return 0;
     } else {
-        std::cout << "set operation mode failure! try again!" << std::endl;
+        std::cout << "set operation mode failure! try again! cnts:" << set_try_counts << std::endl;
         set_try_counts++;
         if (set_try_counts++ > 50) {
             std::cerr << "switch operational mode failure!" << std::endl;

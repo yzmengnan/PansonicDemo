@@ -1,0 +1,10 @@
+{
+    "position_limit": {
+        "max": 1000000,
+        "min": 200
+    },
+    "torque_limit": {
+        "max": 500,
+        "min": -500
+    }
+}

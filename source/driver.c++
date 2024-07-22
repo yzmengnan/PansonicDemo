@@ -13,7 +13,7 @@ DRIVE::ARM_DRIVE::ARM_DRIVE(ADS::ARM_ADS *ads) : ads_Handle{ads}, Tx{ads_Handle-
 }
 
 bool DRIVE::ARM_DRIVE::clearFault() {
-    std::cerr<<"try to clear fault!"<<std::endl;
+    std::cerr << "try to clear fault!" << std::endl;
     for (auto &c: this->Tx) { c.control_word |= 0x80; }
     this->ads_Handle->write();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -100,6 +100,7 @@ void DRIVE::ARM_DRIVE::DISABLE() {
 }
 
 int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
+    static int set_try_counts{};
     if (mode == pMode) { return 0; }
     if (this->enableFlag) { this->DISABLE(); }
     for (auto &d: Tx) { d.operation_mode = pMode; }
@@ -112,9 +113,16 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
         std::cout << std::format("operation mode:{} change successfully!", (int) pMode) << std::endl;
         this->ENABLE();
         mode = pMode;
+        set_try_counts = 0;
         return 0;
     } else {
         std::cout << "set operation mode failure! try again!" << std::endl;
+        set_try_counts++;
+        if (set_try_counts++ > 50) {
+            std::cerr << "switch operational mode failure!" << std::endl;
+            set_try_counts = 0;
+            return -1;
+        }
         return setOperationMode(pMode);
     }
 }

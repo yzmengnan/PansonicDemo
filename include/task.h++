@@ -58,7 +58,7 @@ namespace TASK {
         ~torque_wrench() { std::cout << "torque wrench tool delete" << std::endl; }
 
         int move_dir_0() {
-            m->setMaxSpeed({600});
+            m->setMaxSpeed({2000});
             short torque_value{200};
             auto last_position = m->getPosition()[0];
             size_t counts{};

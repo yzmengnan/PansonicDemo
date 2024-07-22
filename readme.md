@@ -1,7 +1,7 @@
 # Requirements:
 请满足CmakeList内的package要求。
 
-# advice:
+# Advice:
 
 ## 1、Download msys2 
 https://github.com/msys2/msys2-installer/releases/download/2024-05-07/msys2-x86_64-20240507.exe
@@ -24,6 +24,12 @@ https://github.com/msys2/msys2-installer/releases/download/2024-05-07/msys2-x86_
 ## 6、Finish
 
 
+# Using procedure
+
+使用twincat配置好交互的PD0数据后，通过profileVelocity.ps1脚本，实现速度模式控制电机旋转，
+并使用按键h和按键l记录所需设定的位置边界，使用按键s保存。
+
+分别使用Catch.ps1和Release.ps1 实现力矩模式的正反转运动
 
 
 

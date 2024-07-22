@@ -1,3 +1,4 @@
 #run catch program
-echo "run the catch strategy program"
-& './build/Catch.exe' '0'
+Write-Output "run the catch strategy program"
+Set-Location build
+& './Catch.exe' '0'

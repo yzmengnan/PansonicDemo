@@ -15,7 +15,9 @@ namespace TASK {
             m = std::make_shared<DRIVE::ARM_DRIVE>(arm_ads);
         }
 
-        task(std::shared_ptr<DRIVE::ARM_DRIVE> m) : m{m} {}
+        explicit task(std::shared_ptr<DRIVE::ARM_DRIVE> m) : m{m} {}
+
+        ~task() { std::cout << "task object delete" << std::endl; }
 
     protected:
         std::shared_ptr<DRIVE::ARM_DRIVE> m;
@@ -52,6 +54,8 @@ namespace TASK {
             torque_dir_0 = c;
             torque_dir_1 = d;
         }
+
+        ~torque_wrench() { std::cout << "torque wrench tool delete" << std::endl; }
 
         int move_dir_0() {
             m->setMaxSpeed({600});

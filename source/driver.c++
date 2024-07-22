@@ -14,7 +14,6 @@ DRIVE::ARM_DRIVE::ARM_DRIVE(ADS::ARM_ADS *ads)
 }
 
 bool DRIVE::ARM_DRIVE::clearFault() {
-    std::cerr << "try to clear fault!" << std::endl;
     for (auto &c: this->Tx) { c.control_word |= 0x80; }
     this->ads_Handle->write();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -36,7 +35,12 @@ int DRIVE::ARM_DRIVE::ENABLE() {
     // try 3 times
     for (int try_count = 0; try_count < 3; try_count++) {
         uint8_t state = 0;
-        this->clearFault();
+        int temp{};
+        while (this->clearFault()) {
+            std::cout << "clear fault failure: " << temp++ << std::endl;
+            if (temp >= 10) { return -2; }
+        }
+
         // 首先检查是否已经使能
         for (auto child: Rx) { state += static_cast<int>((child.status_word &= 0x37) == 0x37); }
         if (state == ADS_DATA::nums::driver_counts) {

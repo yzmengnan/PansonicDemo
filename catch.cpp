@@ -30,6 +30,10 @@ int main(int argc, char **argv) {
         return -1;
     }
     auto arm_ads = new ADS::ARM_ADS();
+    
+    //set address
+//    arm_ads->setAddress(0,0,0,0);
+
     auto m = std::make_shared<DRIVE::ARM_DRIVE>(arm_ads);
     //start sync data
     m->startSYNC();

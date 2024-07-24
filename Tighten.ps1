@@ -5,4 +5,3 @@ cmake .. -G Ninja
 ninja
 & './Wrench.exe' '1' 'catch' '../config/catch.json'
 Write-Output  "the return code is $LASTEXITCODE"
-Pause

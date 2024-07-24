@@ -165,6 +165,15 @@ int DRIVE::ARM_DRIVE::motionPB(initializer_list<int32_t> targetPosition) {
 }
 
 int DRIVE::ARM_DRIVE::motionPT(initializer_list<int16_t> targetTorque) {
+    //check servo status
+    for (const auto &s: Rx) {
+        if ((s.status_word & 0b1000) >> 3) {
+            std::cout << "servo error" << std::endl;
+            this->DISABLE();
+            this->clearFault();
+            this->ENABLE();
+        }
+    }
     auto err = setOperationMode(OP_MODE::PT);
     if (err == 0) {
         size_t i{};

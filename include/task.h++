@@ -82,7 +82,7 @@ namespace TASK {
 
         //move ccw
         int move_dir_1() {
-            m->setMaxSpeed({1000});
+            m->setMaxSpeed({6000});
             short torque_value{-200};
             while (isReached(DIR::backward)) {
                 m->motionPT({torque_value});

@@ -35,9 +35,9 @@ int main(int argc, char **argv) {
     int err{};
     while (true) {
         if (GetAsyncKeyState(VK_UP) & 0x8000) {
-            err = m.motionPV({100});
+            err = m.motionPV({3000});
         } else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
-            err = m.motionPV({-100});
+            err = m.motionPV({-3000});
         } else {
             err = m.motionPV({0});
         }

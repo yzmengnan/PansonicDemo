@@ -5,7 +5,7 @@
 #ifndef SINGLE_DEMO_DRIVER_H
 #define SINGLE_DEMO_DRIVER_H
 
-#define rpm2P 8388608 / 60.0f / 10
+#define rpm2P 8388608 / 60.0f
 #include "ads.h++"
 #include <iostream>
 

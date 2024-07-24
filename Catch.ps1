@@ -4,5 +4,5 @@ Set-Location build
 cmake .. -G Ninja
 ninja
 & './Catch.exe' '1'
-
 Write-Output  "the return code is $LASTEXITCODE"
+Pause

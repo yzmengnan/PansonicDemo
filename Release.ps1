@@ -5,3 +5,4 @@ cmake .. -G Ninja
 ninja
 & './Catch.exe' '0'
 Write-Output  "the return code is $LASTEXITCODE"
+Pause

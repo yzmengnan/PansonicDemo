@@ -57,6 +57,7 @@ namespace TASK {
 
         ~torque_wrench() { std::cout << "torque wrench tool delete" << std::endl; }
 
+        //move cw
         int move_dir_0() {
             m->setMaxSpeed({2000});
             short torque_value{200};
@@ -79,6 +80,7 @@ namespace TASK {
             return 0;
         }
 
+        //move ccw
         int move_dir_1() {
             m->setMaxSpeed({1000});
             short torque_value{-200};
@@ -95,7 +97,7 @@ namespace TASK {
         }
 
         bool isReached(DIR dir) {
-            return dir ? this->m->getPosition()[0] >= this->limit_max : this->m->getPosition()[0] <= this->limit_min;
+            return !dir ? this->m->getPosition()[0] < this->limit_max : this->m->getPosition()[0] > this->limit_min;
         }
     };
 }// namespace TASK

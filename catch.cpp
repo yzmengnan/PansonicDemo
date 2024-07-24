@@ -18,8 +18,11 @@ int main(int argc, char **argv) {
     }
     auto mut = process_mutex(name);
     if (mut.state) { return -2; }
-
-    std::fstream js_file("../config/axis_config.json");
+    if(argc!=4){
+        return -3;
+    }
+    std::string json_name = argv[3];
+    std::fstream js_file(json_name);
     json j;
     js_file >> j;
     if (!js_file.is_open()) {

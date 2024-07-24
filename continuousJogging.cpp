@@ -7,9 +7,11 @@
 #include <fstream>
 
 using json = nlohmann::json;
-int main() {
+int main(int argc, char **argv) {
     //read json file
-    std::ifstream i("../config/axis_config.json");
+    if (argc != 2) { return -3; }
+    std::string json_name = argv[1];
+    std::ifstream i(json_name);
     json j;
     i >> j;
     if (!i.is_open()) {
@@ -22,7 +24,7 @@ int main() {
                                  (int) j["position_limit"]["max"], (int) j["position_limit"]["min"],
                                  (int) j["torque_limit"]["max"], (int) j["torque_limit"]["min"])
                   << std::endl;
-                i.close();
+        i.close();
     }
     auto arm_ads = new ADS::ARM_ADS();
     auto m = DRIVE::ARM_DRIVE(arm_ads);
@@ -52,7 +54,7 @@ int main() {
 
         if (GetAsyncKeyState('S') & 0x8000) {
             std::cout << "save config data" << std::endl;
-            std::ofstream o("../config/axis_config.json");
+            std::ofstream o(json_name);
             o << std::setw(4) << j;
             o.close();
         }
@@ -61,7 +63,7 @@ int main() {
             std::cout << "Position is: " << m.getPosition()[0] << std::endl;
             temp_position = m.getPosition()[0];
         }
-//        Sleep(400);
+        //        Sleep(400);
     }
     return 0;
 }

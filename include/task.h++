@@ -81,7 +81,7 @@ namespace TASK {
 
         int move_dir_1() {
             m->setMaxSpeed({1000});
-            short torque_value{-700};
+            short torque_value{-200};
             while (isReached(DIR::backward)) {
                 m->motionPT({torque_value});
                 if (torque_value >= this->torque_dir_1) {

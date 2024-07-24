@@ -33,6 +33,7 @@ int DRIVE::ARM_DRIVE::ENABLE() {
     }
     if (this->enableFlag) { return 0; }
     // try 3 times
+    this->HALT(false);
     for (int try_count = 0; try_count < 3; try_count++) {
         uint8_t state = 0;
         int temp{};
@@ -94,6 +95,7 @@ int DRIVE::ARM_DRIVE::ENABLE() {
 
 void DRIVE::ARM_DRIVE::DISABLE() {
     servoBreak(false);
+    this->HALT(true);
     mode = 0;
     for (auto &child_servo: Tx) {
         child_servo.operation_mode = 1;
@@ -209,4 +211,11 @@ std::vector<int> DRIVE::ARM_DRIVE::getPosition() {
     std::vector<int> res;
     for (const auto &d: Rx) { res.push_back(d.actual_position); }
     return res;
+}
+void DRIVE::ARM_DRIVE::HALT(bool halt) {
+    if (halt) {
+        for (auto &d: Tx) { d.control_word |= 0b100000000; }
+    } else {
+        for (auto &d: Tx) { d.control_word &= ~0b100000000; }
+    }
 }

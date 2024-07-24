@@ -5,20 +5,17 @@
 #ifndef SINGLE_DEMO_DRIVER_H
 #define SINGLE_DEMO_DRIVER_H
 
-#define rpm2P 8388608/60.0f/10
-#include <iostream>
+#define rpm2P 8388608 / 60.0f / 10
 #include "ads.h++"
+#include <iostream>
 
 using namespace std;
 
 namespace DRIVE {
     class ARM_DRIVE {
     private:
-        enum OP_MODE {
-            PP = 1,
-            PV = 3,
-            PT = 4
-        };
+        enum OP_MODE { PP = 1, PV = 3, PT = 4 };
+
     public:
         ARM_DRIVE() = delete;
 
@@ -40,6 +37,8 @@ namespace DRIVE {
 
         void DISABLE();
 
+        void HALT(bool halt);
+
         void setProfileVelocity(initializer_list<int> rpm);
 
         void setMaxSpeed(initializer_list<int> rpm);
@@ -55,6 +54,7 @@ namespace DRIVE {
         int motionPV(initializer_list<int32_t> targetVelocity);
 
         std::vector<int> getPosition();
+
     private:
         ADS::ARM_ADS *ads_Handle;
         bool syncFlag;
@@ -63,7 +63,7 @@ namespace DRIVE {
         std::vector<ADS_DATA::servo_tx> &Tx;
         std::vector<ADS_DATA::servo_rx> &Rx;
     };
-}
+}// namespace DRIVE
 
 
-#endif //SINGLE_DEMO_DRIVER_H
+#endif//SINGLE_DEMO_DRIVER_H

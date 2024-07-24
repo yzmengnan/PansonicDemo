@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "driver.h++"
+#include "mutex.hpp"
 #include "nlohmann/json.hpp"
 #include "task.h++"
 #include <fstream>
@@ -9,6 +10,14 @@
 using json = nlohmann::json;
 
 int main(int argc, char **argv) {
+    std::string name;
+    if (argc >= 3) {
+        name = argv[2];
+    } else {
+        name = "exe1";
+    }
+    auto mut = process_mutex(name);
+    if (mut.state) { return -2; }
 
     std::fstream js_file("../config/axis_config.json");
     json j;

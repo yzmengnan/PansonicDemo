@@ -2,19 +2,18 @@
 // Created by 91418 on 24-7-11.
 //
 
-#include <stdexcept>
+#include "ads.h++"
 #include <format>
 #include <iostream>
-#include "ads.h++"
+#include <stdexcept>
 
 namespace ADS {
     Addr::Addr() {
         AdsPortOpen();
-        Address={};
+        Address = {};
         PAddress = &Address;
         auto nErr = AdsGetLocalAddress(PAddress);
-        if (nErr)
-            throw std::runtime_error(std::format("Error: Ads get Address: {}", nErr));
+        if (nErr) throw std::runtime_error(std::format("Error: Ads get Address: {}", nErr));
     }
 
     Addr &Addr::getInstance() {
@@ -22,14 +21,10 @@ namespace ADS {
         return instance;
     }
 
-    const PAmsAddr &Addr::getAddress() {
-        return PAddress;
-    }
+    const PAmsAddr &Addr::getAddress() { return PAddress; }
 
     template<typename T>
-    ADS_COM<T>::ADS_COM(): addr(ads_addr::getInstance()), data(nullptr) {
-
-    }
+    ADS_COM<T>::ADS_COM() : addr(ads_addr::getInstance()), data(nullptr) {}
 
     template<typename T>
     int ADS_COM<T>::write() {
@@ -45,13 +40,8 @@ namespace ADS {
     int ADS_COM<T>::read() {
         setPort(addr, data);
         auto nErr = AdsSyncReadReq(addr.getAddress(), data->c, data->d, data->rxSize, data->rx_data.data());
-//        std::cout<<data->rx_data[0].status_word<<std::endl;
+        //        std::cout<<data->rx_data[0].status_word<<std::endl;
         return nErr;
-    }
-
-    template<typename T>
-    void ADS_COM<T>::setPort(ads_addr &a, T d) {
-        addr.getAddress()->port = d->port;
     }
 
     ARM_ADS::ARM_ADS() {
@@ -68,14 +58,14 @@ namespace ADS {
     void ARM_ADS::startSYNC() {
         t1 = std::thread([&]() {
             while (true) {
-//                std::lock_guard<std::mutex> guard(*m);
+                //                std::lock_guard<std::mutex> guard(*m);
                 this->write();
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
         });
         t2 = std::thread([&]() {
             while (true) {
-//                std::lock_guard<std::mutex> guard(*m);
+                //                std::lock_guard<std::mutex> guard(*m);
                 this->read();
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
@@ -83,4 +73,4 @@ namespace ADS {
         t1.detach();
         t2.detach();
     }
-}
+}// namespace ADS

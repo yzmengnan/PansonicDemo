@@ -66,10 +66,12 @@ namespace ADS {
 
         int read();
 
-        void setPort(ads_addr &a, T d){
+        void getPort(ads_addr &a, T d){
             addr.getAddress()->port = d->port;
         }
-
+        void setPort(const int& p){
+            this->data->port = p;
+        }
         void setAddress(uint64_t a, uint64_t b, uint64_t c, uint64_t d){
             this->data->a = a;
             this->data->b = b;

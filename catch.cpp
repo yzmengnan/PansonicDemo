@@ -18,9 +18,8 @@ int main(int argc, char **argv) {
     }
     auto mut = process_mutex(name);
     if (mut.state) { return -2; }
-    if(argc!=4){
-        return -3;
-    }
+    if (argc != 5) { return -3; }
+    auto plc_number = atoi(argv[4]);
     std::string json_name = argv[3];
     std::fstream js_file(json_name);
     json j;
@@ -30,9 +29,9 @@ int main(int argc, char **argv) {
         return -1;
     }
     auto arm_ads = new ADS::ARM_ADS();
-    
+    arm_ads->setPort(plc_number);
     //set address
-//    arm_ads->setAddress(0,0,0,0);
+    //    arm_ads->setAddress(0,0,0,0);
 
     auto m = std::make_shared<DRIVE::ARM_DRIVE>(arm_ads);
     //start sync data

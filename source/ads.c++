@@ -31,14 +31,14 @@ namespace ADS {
         //数据写入前，写设置端口，
         //针对Twincat的PLC程序，不同的PLC服务有不同的端口
         //通常为851,852...
-        setPort(addr, data);
+        getPort(addr, data);
         auto nErr = AdsSyncWriteReq(addr.getAddress(), data->a, data->b, data->txSize, data->tx_data.data());
         return nErr;
     }
 
     template<typename T>
     int ADS_COM<T>::read() {
-        setPort(addr, data);
+        getPort(addr, data);
         auto nErr = AdsSyncReadReq(addr.getAddress(), data->c, data->d, data->rxSize, data->rx_data.data());
         //        std::cout<<data->rx_data[0].status_word<<std::endl;
         return nErr;
@@ -46,13 +46,13 @@ namespace ADS {
 
     ARM_ADS::ARM_ADS() {
         data = std::make_shared<ADS_DATA::ARM_DATA>();
-        setPort(addr, data);
+        getPort(addr, data);
         m = new std::mutex;
     }
 
     ARM_ADS::ARM_ADS(shared_ptr<ADS_DATA::ARM_DATA> &dataPtr) {
         data = dataPtr;
-        setPort(addr, data);
+        getPort(addr, data);
     }
 
     void ARM_ADS::startSYNC() {

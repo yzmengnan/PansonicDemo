@@ -9,8 +9,9 @@
 using json = nlohmann::json;
 int main(int argc, char **argv) {
     //read json file
-    if (argc != 2) { return -3; }
+    if (argc != 3) { return -3; }
     std::string json_name = argv[1];
+    int port = stoi(argv[2]);
     std::ifstream i(json_name);
     json j;
     i >> j;
@@ -27,6 +28,7 @@ int main(int argc, char **argv) {
         i.close();
     }
     auto arm_ads = new ADS::ARM_ADS();
+    arm_ads->setPort(port);
     auto m = DRIVE::ARM_DRIVE(arm_ads);
     m.startSYNC();
     Sleep(100);

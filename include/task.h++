@@ -60,19 +60,19 @@ namespace TASK {
         //move cw
         int move_dir_0() {
             m->setMaxSpeed({2000});
-            short torque_value{200};
+            short torque_value{400};
             auto last_position = m->getPosition()[0];
             size_t counts{};
             while (isReached(DIR::forward)) {
-                m->motionPT({torque_value});
+                counts += (m->motionPT({torque_value}) != 0);
                 if (torque_value <= this->torque_dir_0) { torque_value += 20; }
                 counts += abs(last_position - m->getPosition()[0]) <= 10;
                 last_position = m->getPosition()[0];
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
-                if (counts >= 100) {
+                if (counts >= 10) {
                     std::cout << "stack!" << std::endl;
                     m->DISABLE();
-                    return 1;
+                    return -300;
                 }
             }
             std::cout << "reached limited max position" << std::endl;
@@ -83,12 +83,17 @@ namespace TASK {
         //move ccw
         int move_dir_1() {
             m->setMaxSpeed({6000});
-            short torque_value{-200};
+            short torque_value{-800};
+            size_t cnts{};
             while (isReached(DIR::backward)) {
-                m->motionPT({torque_value});
+                cnts +=(bool) (0 != m->motionPT({torque_value}));
                 if (torque_value >= this->torque_dir_1) {
                     torque_value -= 20;
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                }
+                if(cnts>=10){
+                    m->DISABLE();
+                    return -300;
                 }
             }
             std::cout << "reached limited min position" << std::endl;

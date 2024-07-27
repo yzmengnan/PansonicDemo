@@ -39,7 +39,7 @@ int DRIVE::ARM_DRIVE::ENABLE() {
         int temp{};
         while (this->clearFault()) {
             std::cout << "clear fault failure: " << temp++ << std::endl;
-            if (temp >= 10) { return -2; }
+            if (temp >= 3) { return -2; }
         }
 
         // 首先检查是否已经使能
@@ -118,7 +118,9 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
     }
     if (check_counts == ADS_DATA::nums::driver_counts) {
         std::cout << std::format("operation mode:{} change successfully!", (int) pMode) << std::endl;
-        this->ENABLE();
+        if(this->ENABLE()==-2){
+            return -3;
+        }
         mode = pMode;
         set_try_counts = 0;
         return 0;
@@ -141,7 +143,7 @@ int DRIVE::ARM_DRIVE::motionPB(initializer_list<int32_t> targetPosition) {
     if (err == 0) {
         size_t i{};
         for (const auto &t: targetPosition) {
-            if (i > ADS_DATA::nums::driver_counts) { return 1; }
+            if (i > ADS_DATA::nums::driver_counts) { return 2; }
             Tx[i++].target_position = t;
         }
         for (auto &d: Tx) { d.control_word |= 0x10; }
@@ -171,7 +173,9 @@ int DRIVE::ARM_DRIVE::motionPT(initializer_list<int16_t> targetTorque) {
             std::cout << "servo error" << std::endl;
             this->DISABLE();
             this->clearFault();
-            this->ENABLE();
+            if(this->ENABLE()!=0){
+                return -3;
+            }
         }
     }
     auto err = setOperationMode(OP_MODE::PT);

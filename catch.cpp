@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
     auto t = TASK::torque_wrench(m, (int) j["position_limit"]["max"], (int) j["position_limit"]["min"],
                                  (short) j["torque_limit"]["max"], (short) j["torque_limit"]["min"]);
 
+
     if (argc >= 2) {
         auto signal = atoi(argv[1]);
         if (signal == 1) return t.move_dir_0();

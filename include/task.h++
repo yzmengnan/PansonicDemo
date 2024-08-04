@@ -66,7 +66,7 @@ namespace TASK {
             while (isReached(DIR::forward)) {
                 counts += (m->motionPT({torque_value}) != 0);
                 if (torque_value <= this->torque_dir_0) { torque_value += 20; }
-                counts += abs(last_position - m->getPosition()[0]) <= 10;
+                counts += abs(last_position - m->getPosition()[0]) <= 1000;
                 last_position = m->getPosition()[0];
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 if (counts >= 10) {
@@ -84,14 +84,17 @@ namespace TASK {
         int move_dir_1() {
             m->setMaxSpeed({6000});
             short torque_value{-800};
+            auto last_position = m->getPosition()[0];
             size_t cnts{};
             while (isReached(DIR::backward)) {
-                cnts +=(bool) (0 != m->motionPT({torque_value}));
+                cnts += (bool) (0 != m->motionPT({torque_value}));
+                cnts += abs(last_position - m->getPosition()[0]) <= 1000;
+                last_position = m->getPosition()[0];
                 if (torque_value >= this->torque_dir_1) {
                     torque_value -= 20;
                     std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
-                if(cnts>=10){
+                if (cnts >= 10) {
                     m->DISABLE();
                     return -300;
                 }

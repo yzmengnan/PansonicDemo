@@ -61,6 +61,7 @@ int main(int argc, char **argv) {
         std::cout << "wait for command" << std::endl;
         while (true) {
             if (asyncTcp.command == "close") {
+                asyncTcp.send(3);
                 std::cout << "close" << std::endl;
                 m->ENABLE();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -71,6 +72,7 @@ int main(int argc, char **argv) {
                     asyncTcp.send(1);
                 }
             } else if (asyncTcp.command == "open") {
+                asyncTcp.send(3);
                 std::cout << "open" << std::endl;
                 m->ENABLE();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -81,9 +83,10 @@ int main(int argc, char **argv) {
                     asyncTcp.send(0);
                 }
             } else {
+                asyncTcp.send(4);
                 m->DISABLE();
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
         thread_IO.detach();
     }

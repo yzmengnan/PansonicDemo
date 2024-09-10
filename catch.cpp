@@ -58,9 +58,10 @@ int main(int argc, char **argv) {
         boost::asio::io_context IO;
         AsyncTcpServer asyncTcp(IO, 10010);
         std::thread thread_IO([&]() { IO.run(); });
-        std::cout << "wait for command" << std::endl;
+        static bool isShown = false;
         while (true) {
             if (asyncTcp.command == "close") {
+                isShown = false;
                 asyncTcp.send(3);
                 std::cout << "close" << std::endl;
                 m->ENABLE();
@@ -72,6 +73,7 @@ int main(int argc, char **argv) {
                     asyncTcp.send(1);
                 }
             } else if (asyncTcp.command == "open") {
+                isShown = false;
                 asyncTcp.send(3);
                 std::cout << "open" << std::endl;
                 m->ENABLE();
@@ -84,6 +86,10 @@ int main(int argc, char **argv) {
                 }
             } else {
                 asyncTcp.send(4);
+                if (!isShown) {
+                    std::cout << "wait for command" << std::endl;
+                    isShown = true;
+                }
                 m->DISABLE();
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }

@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
                 return t.move_dir_1();
         }
     } else {
+        std::cout<<"USE SOCKET COMMAND"<<std::endl;
         //using socket command
         boost::asio::io_context IO;
         AsyncTcpServer asyncTcp(IO, 10010);

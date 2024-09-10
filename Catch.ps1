@@ -1,5 +1,6 @@
 #run catch program
 Write-Output "run the catch strategy program"
+#TODO: set correct location
 Set-Location build
 $env:USE_SOCKET_COMMAND  = "TRUE"
 cmake .. -G Ninja

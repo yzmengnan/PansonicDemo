@@ -16,7 +16,7 @@ using boost::asio::ip::tcp;
 
 class AsyncTcpServer {
 public:
-    std::string command{};
+    std::string command{-1};
 
 public:
     AsyncTcpServer(boost::asio::io_context &io_context, short port)
@@ -27,18 +27,18 @@ public:
 
     void start_accept() {
         // 创建一个新的socket对象，用于接受连接
-        auto *socket = new tcp::socket(acceptor_.get_executor());
-        s = socket;
+        auto socket = new tcp::socket(acceptor_.get_executor());
 
         // 异步等待连接，连接成功后调用handle_accept
-        acceptor_.async_accept(
-                *socket, boost::bind(&AsyncTcpServer::handle_accept, this, socket, boost::asio::placeholders::error));
+        acceptor_.async_accept(*socket, [this, socket](const boost::system::error_code &error) {
+            this->handle_accept(socket, error);
+        });
     }
 
     void handle_accept(tcp::socket *socket, const boost::system::error_code &error) {
         if (!error) {
             std::cout << "New connection accepted!" << std::endl;
-
+            socket_ = socket;
             // 开始异步读取数据
             socket->async_read_some(boost::asio::buffer(data_, max_length),
                                     boost::bind(&AsyncTcpServer::handle_read, this, socket,
@@ -59,8 +59,10 @@ public:
             std::cout.write(data_, bytes_transferred);
             std::cout << std::endl;
             if ((char) data_[0] == 1) {
+                std::cout << "Received Command: open" << std::endl;
                 command = "open";
             } else if ((char) data_[0] == 0) {
+                std::cout << "Received Command: close" << std::endl;
                 command = "close";
             } else {
                 command = {};
@@ -76,14 +78,14 @@ public:
             delete socket;
         }
     }
-    void send(const char &d) {
-        char number = static_cast<char>(d);
-        boost::asio::write(*s, boost::asio::buffer(&number, 1));
+    void send(const char d) {
+        std::cout << "send " << d << std::endl;
+        boost::asio::write(*socket_, boost::asio::buffer(&d, 1));
     }
 
 private:
     tcp::acceptor acceptor_;
-    tcp::socket *s;
+    tcp::socket *socket_;
     enum { max_length = 1024 };
     char data_[max_length];
 };

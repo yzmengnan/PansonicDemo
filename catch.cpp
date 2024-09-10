@@ -53,30 +53,31 @@ int main(int argc, char **argv) {
                 return t.move_dir_1();
         }
     } else {
-        std::cout<<"USE SOCKET COMMAND"<<std::endl;
+        std::cout << "USE SOCKET COMMAND" << std::endl;
         //using socket command
         boost::asio::io_context IO;
         AsyncTcpServer asyncTcp(IO, 10010);
-        IO.run();
+        std::thread thread_IO([&]() { IO.run(); });
+        std::cout << "wait for command" << std::endl;
         while (true) {
             if (asyncTcp.command == "close") {
+                std::cout << "close" << std::endl;
                 m->ENABLE();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 auto res = t.move_dir_0();
-                if(res!=0){
+                if (res != 0) {
                     asyncTcp.send(0);
-                }
-                else{
+                } else {
                     asyncTcp.send(1);
                 }
             } else if (asyncTcp.command == "open") {
+                std::cout << "open" << std::endl;
                 m->ENABLE();
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 auto res = t.move_dir_1();
-                if(res!=0){
+                if (res != 0) {
                     asyncTcp.send(1);
-                }
-                else{
+                } else {
                     asyncTcp.send(0);
                 }
             } else {
@@ -84,6 +85,7 @@ int main(int argc, char **argv) {
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
+        thread_IO.detach();
     }
     return 0;
 }

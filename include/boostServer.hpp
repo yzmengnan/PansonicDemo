@@ -27,7 +27,7 @@ public:
 
     void start_accept() {
         // 创建一个新的socket对象，用于接受连接
-        auto socket = new tcp::socket(acceptor_.get_executor());
+        auto socket = std::make_shared<tcp::socket>(acceptor_.get_executor());
 
         // 异步等待连接，连接成功后调用handle_accept
         acceptor_.async_accept(*socket, [this, socket](const boost::system::error_code &error) {
@@ -35,18 +35,17 @@ public:
         });
     }
 
-    void handle_accept(tcp::socket *socket, const boost::system::error_code &error) {
+    void handle_accept(const std::shared_ptr<tcp::socket> &socket, const boost::system::error_code &error) {
         if (!error) {
             std::cout << "New connection accepted!" << std::endl;
             socket_ = socket;
             // 开始异步读取数据
             socket->async_read_some(boost::asio::buffer(data_, max_length),
-                                    boost::bind(&AsyncTcpServer::handle_read, this, socket,
+                                    boost::bind(&AsyncTcpServer::handle_read, this, socket.get(),
                                                 boost::asio::placeholders::error,
                                                 boost::asio::placeholders::bytes_transferred));
         } else {
             std::cerr << "Error accepting connection: " << error.message() << std::endl;
-            delete socket;
         }
 
         // 继续接受其他连接
@@ -85,7 +84,7 @@ public:
 
 private:
     tcp::acceptor acceptor_;
-    tcp::socket *socket_;
+    std::shared_ptr<tcp::socket> socket_;
     enum { max_length = 1024 };
     char data_[max_length];
 };

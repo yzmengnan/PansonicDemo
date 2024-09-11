@@ -69,7 +69,7 @@ namespace TASK {
                 counts += abs(last_position - m->getPosition()[0]) <= 1000;
                 last_position = m->getPosition()[0];
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
-                if (counts >= 10) {
+                if (counts >= 100) {
                     std::cout << "stack!" << std::endl;
                     m->DISABLE();
                     return -300;
@@ -82,21 +82,22 @@ namespace TASK {
 
         //move ccw
         int move_dir_1() {
-            m->setMaxSpeed({6000});
-            short torque_value{-800};
+            m->setMaxSpeed({2000});
+            short torque_value{-200};
             auto last_position = m->getPosition()[0];
-            size_t cnts{};
+            size_t counts{};
             while (isReached(DIR::backward)) {
-                cnts += (bool) (0 != m->motionPT({torque_value}));
-                cnts += abs(last_position - m->getPosition()[0]) <= 1000;
-                last_position = m->getPosition()[0];
+                m->motionPT({torque_value});
                 if (torque_value >= this->torque_dir_1) {
                     torque_value -= 20;
-                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 }
-                if (cnts >= 10) {
+                counts += abs(last_position - m->getPosition()[0]) <= 10;
+                last_position = m->getPosition()[0];
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                if (counts >= 100) {
+                    std::cout << "stack!" << std::endl;
                     m->DISABLE();
-                    return -300;
+                    return 1;
                 }
             }
             std::cout << "reached limited min position" << std::endl;

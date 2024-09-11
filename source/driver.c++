@@ -102,7 +102,7 @@ void DRIVE::ARM_DRIVE::DISABLE() {
         child_servo.control_word = 0;
     }
     ads_Handle->write();
-    std::cerr << "All Servos Operation disabled!" << '\n';
+    if (this->enableFlag != false) std::cerr << "All Servos Operation disabled!" << '\n';
     enableFlag = false;
 }
 
@@ -127,7 +127,7 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
     } else {
         std::cout << "set operation mode failure! try again! cnts:" << set_try_counts << std::endl;
         set_try_counts++;
-        if (set_try_counts++ > 50) {
+        if (set_try_counts++ > 10) {
             std::cerr << "switch operational mode failure!" << std::endl;
             set_try_counts = 0;
             return -1;

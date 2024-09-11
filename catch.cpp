@@ -93,6 +93,7 @@ int main(int argc, char **argv) {
                 m->DISABLE();
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
+            asyncTcp.command={};
         }
         thread_IO.detach();
     }

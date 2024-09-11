@@ -125,7 +125,7 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
     } else {
         std::cout << "set operation mode failure! try again! cnts:" << set_try_counts << std::endl;
         set_try_counts++;
-        if (set_try_counts++ > 50) {
+        if (set_try_counts++ > 10) {
             std::cerr << "switch operational mode failure!" << std::endl;
             set_try_counts = 0;
             return -1;

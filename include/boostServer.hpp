@@ -22,6 +22,7 @@ public:
     AsyncTcpServer(boost::asio::io_context &io_context, short port)
         : acceptor_(io_context, tcp::endpoint(tcp::v4(), port)) {
         command = {};
+        socket_ = nullptr;
         start_accept();
     }
 
@@ -43,7 +44,7 @@ public:
             socket->async_read_some(boost::asio::buffer(data_, max_length),
                                     boost::bind(&AsyncTcpServer::handle_read, this, socket.get(),
                                                 boost::asio::placeholders::error,
-                                                boost::asio::placeholders::bytes_transferred));
+                                                 boost::asio::placeholders::bytes_transferred));
         } else {
             std::cerr << "Error accepting connection: " << error.message() << std::endl;
         }
@@ -71,15 +72,22 @@ public:
             socket->async_read_some(boost::asio::buffer(data_, max_length),
                                     boost::bind(&AsyncTcpServer::handle_read, this, socket,
                                                 boost::asio::placeholders::error,
-                                                boost::asio::placeholders::bytes_transferred));
+                                                 boost::asio::placeholders::bytes_transferred));
         } else {
             std::cerr << "Error reading data: " << error.message() << std::endl;
-            delete socket;
+//            delete socket;
+            socket_= nullptr;
         }
     }
     void send(const char d) {
-        std::cout << "send " << d << std::endl;
-        boost::asio::write(*socket_, boost::asio::buffer(&d, 1));
+        if(socket_!=nullptr) {
+            if (socket_->is_open()) {
+                std::cout << "send " << d << std::endl;
+                boost::asio::write(*socket_, boost::asio::buffer(&d, 1));
+            } else {
+                std::cerr << "client not connected!" << std::endl;
+            }
+        }
     }
 
 private:

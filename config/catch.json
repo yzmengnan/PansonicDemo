@@ -1,7 +1,7 @@
 {
     "position_limit": {
-        "max": 4658466,
-        "min": 991386
+        "max": -17376804,
+        "min": -90118723
     },
     "torque_limit": {
         "max": 500,

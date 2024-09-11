@@ -58,59 +58,15 @@ int main(int argc, char **argv) {
         boost::asio::io_context IO;
         AsyncTcpServer *asyncTcp;
         //for torque wrench catch tool
-        if (plc_number == 853) {
-            asyncTcp = new AsyncTcpServer(IO, 10010);
-            std::thread thread_IO([&]() { IO.run(); });
-            static bool isShown = false;
-            while (true) {
-                if (asyncTcp->command == "close") {
-                    isShown = false;
-                    asyncTcp->send(3);
-                    std::cout << "close" << std::endl;
-                    m->ENABLE();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                    auto res = t.move_dir_0();
-                    if (res != 0) {
-                        asyncTcp->send(0);
-                    } else {
-                        asyncTcp->send(1);
-                    }
-                    asyncTcp->command = {};
-                } else if (asyncTcp->command == "open") {
-                    isShown = false;
-                    asyncTcp->send(3);
-                    std::cout << "open" << std::endl;
-                    m->ENABLE();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                    auto res = t.move_dir_1();
-                    if (res != 0) {
-                        asyncTcp->send(1);
-                    } else {
-                        asyncTcp->send(0);
-                    }
-                    asyncTcp->command = {};
-                } else {
-                    //                asyncTcp.send(4);
-                    if (!isShown) {
-                        std::cout << "wait for command" << std::endl;
-                        isShown = true;
-                    }
-                    m->DISABLE();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-                    //                std::cout<<"command "<<asyncTcp.command<<std::endl;
-                }
-            }
-            thread_IO.detach();
-        }
-        //for torque wrench tool
-        else if (plc_number == 854) {
+        if (plc_number == 854) {
             asyncTcp = new AsyncTcpServer(IO, 10020);
             std::thread thread_IO([&]() { IO.run(); });
             static bool isShown = false;
             static bool isDisabled = false;
+            int no_message_numbers = 0;
             while (true) {
                 if (asyncTcp->command == "rotate_l") {
-                    std::cout<<"rotate_l"<<std::endl;
+                    std::cout << "rotate_l" << std::endl;
                     isShown = false;
                     m->ENABLE();
                     m->setMaxSpeed({6000});
@@ -119,7 +75,7 @@ int main(int argc, char **argv) {
                     asyncTcp->command = {};
                     isDisabled = false;
                 } else if (asyncTcp->command == "rotate_r") {
-                    std::cout<<"rotate_r"<<std::endl;
+                    std::cout << "rotate_r" << std::endl;
                     isShown = false;
                     m->ENABLE();
                     m->setMaxSpeed({6000});
@@ -133,20 +89,23 @@ int main(int argc, char **argv) {
                     asyncTcp->command = {};
                     isDisabled = true;
                 } else {
-                    if (!isShown) {
-                        std::cout << "wait for command" << std::endl;
-                        isShown = true;
-                    }
-                    if (!isDisabled) m->motionPT({0});
+                    no_message_numbers++;
                     std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                    if (no_message_numbers == 10) {
+
+                        if (!isShown) {
+                            std::cout << "wait for command" << std::endl;
+                            isShown = true;
+                        }
+
+                        if (!isDisabled) m->motionPT({0});
+                    }
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
-                //                string value = std::to_string(m->getTorque()[0]);
 
                 auto t_value = m->getTorque()[0];
                 auto p_value = m->getPosition()[0];
                 wrench_Data w = {t_value, p_value};
-                //                asyncTcp->send(t_value);
                 asyncTcp->send(w);
                 //clear the position
                 if (asyncTcp->command == "clear") {}

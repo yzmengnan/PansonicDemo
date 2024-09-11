@@ -91,7 +91,7 @@ namespace TASK {
                 if (torque_value >= this->torque_dir_1) {
                     torque_value -= 20;
                 }
-                counts += abs(last_position - m->getPosition()[0]) <= 10;
+                counts += abs(last_position - m->getPosition()[0]) <= 1000;
                 last_position = m->getPosition()[0];
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 if (counts >= 100) {

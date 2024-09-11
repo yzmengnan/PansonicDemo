@@ -82,7 +82,7 @@ public:
     void send(const char d) {
         if(socket_!=nullptr) {
             if (socket_->is_open()) {
-                std::cout << "send " << d << std::endl;
+                std::cout << "send " <<std::to_string( d) << std::endl;
                 boost::asio::write(*socket_, boost::asio::buffer(&d, 1));
             } else {
                 std::cerr << "client not connected!" << std::endl;

@@ -72,6 +72,7 @@ int main(int argc, char **argv) {
                 } else {
                     asyncTcp.send(1);
                 }
+                asyncTcp.command={};
             } else if (asyncTcp.command == "open") {
                 isShown = false;
                 asyncTcp.send(3);
@@ -84,6 +85,7 @@ int main(int argc, char **argv) {
                 } else {
                     asyncTcp.send(0);
                 }
+                asyncTcp.command={};
             } else {
 //                asyncTcp.send(4);
                 if (!isShown) {
@@ -92,8 +94,8 @@ int main(int argc, char **argv) {
                 }
                 m->DISABLE();
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
+//                std::cout<<"command "<<asyncTcp.command<<std::endl;
             }
-            asyncTcp.command={};
         }
         thread_IO.detach();
     }

@@ -102,7 +102,7 @@ void DRIVE::ARM_DRIVE::DISABLE() {
         child_servo.control_word = 0;
     }
     ads_Handle->write();
-    std::cerr << "All Servos Operation disabled!" << '\n';
+    if (this->enableFlag != false) std::cerr << "All Servos Operation disabled!" << '\n';
     enableFlag = false;
 }
 

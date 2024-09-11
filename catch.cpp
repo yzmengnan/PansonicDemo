@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
                     asyncTcp.send(0);
                 }
             } else {
-                asyncTcp.send(4);
+//                asyncTcp.send(4);
                 if (!isShown) {
                     std::cout << "wait for command" << std::endl;
                     isShown = true;

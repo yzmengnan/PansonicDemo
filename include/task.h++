@@ -84,11 +84,20 @@ namespace TASK {
         int move_dir_1() {
             m->setMaxSpeed({6000});
             short torque_value{-200};
+            auto last_position = m->getPosition()[0];
+            size_t counts{};
             while (isReached(DIR::backward)) {
                 m->motionPT({torque_value});
                 if (torque_value >= this->torque_dir_1) {
                     torque_value -= 20;
-                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                }
+                counts += abs(last_position - m->getPosition()[0]) <= 10;
+                last_position = m->getPosition()[0];
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                if (counts >= 100) {
+                    std::cout << "stack!" << std::endl;
+                    m->DISABLE();
+                    return 1;
                 }
             }
             std::cout << "reached limited min position" << std::endl;

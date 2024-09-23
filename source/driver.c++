@@ -118,9 +118,7 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
     }
     if (check_counts == ADS_DATA::nums::driver_counts) {
         std::cout << std::format("operation mode:{} change successfully!", (int) pMode) << std::endl;
-        if(this->ENABLE()==-2){
-            return -3;
-        }
+        if (this->ENABLE() == -2) { return -3; }
         mode = pMode;
         set_try_counts = 0;
         return 0;
@@ -173,9 +171,7 @@ int DRIVE::ARM_DRIVE::motionPT(initializer_list<int16_t> targetTorque) {
             std::cout << "servo error" << std::endl;
             this->DISABLE();
             this->clearFault();
-            if(this->ENABLE()!=0){
-                return -3;
-            }
+            if (this->ENABLE() != 0) { return -3; }
         }
     }
     auto err = setOperationMode(OP_MODE::PT);
@@ -225,6 +221,13 @@ std::vector<int> DRIVE::ARM_DRIVE::getPosition() {
     for (const auto &d: Rx) { res.push_back(d.actual_position); }
     return res;
 }
+
+std::vector<int> DRIVE::ARM_DRIVE::getTorque() {
+    std::vector<int> res;
+    for (const auto &d: Rx) { res.push_back(d.actual_torque); }
+    return res;
+}
+
 void DRIVE::ARM_DRIVE::HALT(bool halt) {
     if (halt) {
         for (auto &d: Tx) { d.control_word |= 0b100000000; }

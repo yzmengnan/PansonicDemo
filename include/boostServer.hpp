@@ -44,7 +44,7 @@ public:
             socket->async_read_some(boost::asio::buffer(data_, max_length),
                                     boost::bind(&AsyncTcpServer::handle_read, this, socket.get(),
                                                 boost::asio::placeholders::error,
-                                                 boost::asio::placeholders::bytes_transferred));
+                                                boost::asio::placeholders::bytes_transferred));
         } else {
             std::cerr << "Error accepting connection: " << error.message() << std::endl;
         }
@@ -58,12 +58,20 @@ public:
             std::cout << "Received data: ";
             std::cout.write(data_, bytes_transferred);
             std::cout << std::endl;
-            if ((char) data_[0] == 1) {
+            if ((char) data_[0] == 0) {
                 std::cout << "Received Command: open" << std::endl;
-                command = "open";
-            } else if ((char) data_[0] == 0) {
-                std::cout << "Received Command: close" << std::endl;
                 command = "close";
+            } else if ((char) data_[0] == 1) {
+                std::cout << "Received Command: close" << std::endl;
+                command = "open";
+            } else if ((char) data_[0] == 2) {
+                command = "rotate_r";
+            } else if ((char) data_[0] == 3) {
+                command = "rotate_l";
+            } else if ((char) data_[0] == 4) {
+                command = "clear";
+            } else if ((char) data_[0] == 5) {
+                command = "disable";
             } else {
                 command = {};
             }
@@ -72,18 +80,27 @@ public:
             socket->async_read_some(boost::asio::buffer(data_, max_length),
                                     boost::bind(&AsyncTcpServer::handle_read, this, socket,
                                                 boost::asio::placeholders::error,
-                                                 boost::asio::placeholders::bytes_transferred));
+                                                boost::asio::placeholders::bytes_transferred));
         } else {
             std::cerr << "Error reading data: " << error.message() << std::endl;
-//            delete socket;
-            socket_= nullptr;
+            //            delete socket;
+            socket_ = nullptr;
         }
     }
     void send(const char d) {
-        if(socket_!=nullptr) {
+        if (socket_ != nullptr) {
             if (socket_->is_open()) {
-                std::cout << "send " <<std::to_string( d) << std::endl;
+                std::cout << "send " << std::to_string(d) << std::endl;
                 boost::asio::write(*socket_, boost::asio::buffer(&d, 1));
+            } else {
+                std::cerr << "client not connected!" << std::endl;
+            }
+        }
+    }
+    void send(const std::string& s) {
+        if (socket_ != nullptr) {
+            if (socket_->is_open()) {
+                boost::asio::write(*socket_, boost::asio::buffer(s));
             } else {
                 std::cerr << "client not connected!" << std::endl;
             }

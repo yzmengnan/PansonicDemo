@@ -56,48 +56,94 @@ int main(int argc, char **argv) {
         std::cout << "USE SOCKET COMMAND" << std::endl;
         //using socket command
         boost::asio::io_context IO;
-        AsyncTcpServer asyncTcp(IO, 10010);
-        std::thread thread_IO([&]() { IO.run(); });
-        static bool isShown = false;
-        while (true) {
-            if (asyncTcp.command == "close") {
-                isShown = false;
-                asyncTcp.send(3);
-                std::cout << "close" << std::endl;
-                m->ENABLE();
-                std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                auto res = t.move_dir_0();
-                if (res != 0) {
-                    asyncTcp.send(0);
+        AsyncTcpServer *asyncTcp;
+        //for torque wrench catch tool
+        if (plc_number == 853) {
+            asyncTcp = new AsyncTcpServer(IO, 10010);
+            std::thread thread_IO([&]() { IO.run(); });
+            static bool isShown = false;
+            while (true) {
+                if (asyncTcp->command == "close") {
+                    isShown = false;
+                    asyncTcp->send(3);
+                    std::cout << "close" << std::endl;
+                    m->ENABLE();
+                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                    auto res = t.move_dir_0();
+                    if (res != 0) {
+                        asyncTcp->send(0);
+                    } else {
+                        asyncTcp->send(1);
+                    }
+                    asyncTcp->command = {};
+                } else if (asyncTcp->command == "open") {
+                    isShown = false;
+                    asyncTcp->send(3);
+                    std::cout << "open" << std::endl;
+                    m->ENABLE();
+                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                    auto res = t.move_dir_1();
+                    if (res != 0) {
+                        asyncTcp->send(1);
+                    } else {
+                        asyncTcp->send(0);
+                    }
+                    asyncTcp->command = {};
                 } else {
-                    asyncTcp.send(1);
+                    //                asyncTcp.send(4);
+                    if (!isShown) {
+                        std::cout << "wait for command" << std::endl;
+                        isShown = true;
+                    }
+                    m->DISABLE();
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                    //                std::cout<<"command "<<asyncTcp.command<<std::endl;
                 }
-                asyncTcp.command={};
-            } else if (asyncTcp.command == "open") {
-                isShown = false;
-                asyncTcp.send(3);
-                std::cout << "open" << std::endl;
-                m->ENABLE();
-                std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                auto res = t.move_dir_1();
-                if (res != 0) {
-                    asyncTcp.send(1);
-                } else {
-                    asyncTcp.send(0);
-                }
-                asyncTcp.command={};
-            } else {
-//                asyncTcp.send(4);
-                if (!isShown) {
-                    std::cout << "wait for command" << std::endl;
-                    isShown = true;
-                }
-                m->DISABLE();
-                std::this_thread::sleep_for(std::chrono::milliseconds(500));
-//                std::cout<<"command "<<asyncTcp.command<<std::endl;
             }
+            thread_IO.detach();
         }
-        thread_IO.detach();
+        //for torque wrench tool
+        else if (plc_number == 854) {
+            asyncTcp = new AsyncTcpServer(IO, 10020);
+            std::thread thread_IO([&]() { IO.run(); });
+            static bool isShown = false;
+            while (true) {
+                if (asyncTcp->command == "rotate_l") {
+                    isShown = false;
+                    m->ENABLE();
+                    m->setMaxSpeed({6000});
+                    m->motionPT({500});
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    asyncTcp->command = {};
+                } else if (asyncTcp->command == "rotate_r") {
+                    isShown = false;
+                    m->ENABLE();
+                    m->setMaxSpeed({6000});
+                    m->motionPT({-500});
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    asyncTcp->command = {};
+                } else if (asyncTcp->command == "disable") {
+                    isShown = false;
+                    m->DISABLE();
+                    asyncTcp->command = {};
+                } else {
+                    if (!isShown) {
+                        std::cout << "wait for command" << std::endl;
+                        isShown = true;
+                    }
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(20));
+                string value = std::to_string(m->getTorque()[0]);
+                asyncTcp->send(value);
+                //clear the position
+                if (asyncTcp->command == "clear") {}
+            }
+            thread_IO.detach();
+        } else {
+            asyncTcp = nullptr;
+            std::cout << "error! invalid plc port" << std::endl;
+            return -1;
+        }
     }
     return 0;
 }

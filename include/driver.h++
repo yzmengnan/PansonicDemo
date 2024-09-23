@@ -55,6 +55,8 @@ namespace DRIVE {
 
         std::vector<int> getPosition();
 
+        std::vector<int> getTorque();
+
     private:
         ADS::ARM_ADS *ads_Handle;
         bool syncFlag;

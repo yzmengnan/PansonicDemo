@@ -134,7 +134,8 @@ int main(int argc, char **argv) {
                     m->motionPT({0});
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
-                string value = std::to_string(m->getTorque()[0]);
+                //                string value = std::to_string(m->getTorque()[0]);
+                auto value = m->getTorque()[0];
                 asyncTcp->send(value);
                 //clear the position
                 if (asyncTcp->command == "clear") {}

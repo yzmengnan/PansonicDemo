@@ -97,7 +97,17 @@ public:
             }
         }
     }
-    void send(const std::string& s) {
+
+    void send(const int d) {
+        if (socket_ != nullptr) {
+            if (socket_->is_open()) {
+                boost::asio::write(*socket_, boost::asio::buffer(&d, sizeof(d)));
+            } else {
+                std::cerr << "client not connected!" << std::endl;
+            }
+        }
+    }
+    void send(const std::string &s) {
         if (socket_ != nullptr) {
             if (socket_->is_open()) {
                 boost::asio::write(*socket_, boost::asio::buffer(s));

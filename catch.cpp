@@ -131,6 +131,7 @@ int main(int argc, char **argv) {
                         std::cout << "wait for command" << std::endl;
                         isShown = true;
                     }
+                    m->motionPT({0});
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
                 string value = std::to_string(m->getTorque()[0]);

@@ -135,8 +135,12 @@ int main(int argc, char **argv) {
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
                 //                string value = std::to_string(m->getTorque()[0]);
-                auto value = m->getTorque()[0];
-                asyncTcp->send(value);
+
+                auto t_value = m->getTorque()[0];
+                auto p_value = m->getPosition()[0];
+                wrench_Data w = {t_value, p_value};
+                //                asyncTcp->send(t_value);
+                asyncTcp->send(w);
                 //clear the position
                 if (asyncTcp->command == "clear") {}
             }

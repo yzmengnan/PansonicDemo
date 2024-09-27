@@ -14,6 +14,11 @@
 
 using boost::asio::ip::tcp;
 
+struct wrench_Data{
+    int32_t torque{};
+    int32_t position{};
+};
+
 class AsyncTcpServer {
 public:
     std::string command{-1};
@@ -113,6 +118,15 @@ public:
                 boost::asio::write(*socket_, boost::asio::buffer(s));
             } else {
                 std::cerr << "client not connected!" << std::endl;
+            }
+        }
+    }
+    void send(const wrench_Data&d){
+        if(socket_!= nullptr){
+            if(socket_->is_open()){
+                std::vector<char> buffer(sizeof(d));
+                std::memcpy(buffer.data(),&d,sizeof(d));
+                boost::asio::write(*socket_,boost::asio::buffer(buffer.data(),buffer.size()));
             }
         }
     }

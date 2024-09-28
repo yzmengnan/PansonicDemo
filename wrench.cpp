@@ -107,31 +107,38 @@ int main(int argc, char **argv) {
             asyncTcp = new AsyncTcpServer(IO, 10020);
             std::thread thread_IO([&]() { IO.run(); });
             static bool isShown = false;
+            static bool isDisabled = false;
             while (true) {
                 if (asyncTcp->command == "rotate_l") {
+                    std::cout<<"rotate_l"<<std::endl;
                     isShown = false;
                     m->ENABLE();
                     m->setMaxSpeed({6000});
                     m->motionPT({500});
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
                     asyncTcp->command = {};
+                    isDisabled = false;
                 } else if (asyncTcp->command == "rotate_r") {
+                    std::cout<<"rotate_r"<<std::endl;
                     isShown = false;
                     m->ENABLE();
                     m->setMaxSpeed({6000});
                     m->motionPT({-500});
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
                     asyncTcp->command = {};
+                    isDisabled = false;
                 } else if (asyncTcp->command == "disable") {
                     isShown = false;
                     m->DISABLE();
                     asyncTcp->command = {};
+                    isDisabled = true;
                 } else {
                     if (!isShown) {
                         std::cout << "wait for command" << std::endl;
                         isShown = true;
                     }
-                    m->motionPT({0});
+                    if (!isDisabled) m->motionPT({0});
+                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
                 //                string value = std::to_string(m->getTorque()[0]);

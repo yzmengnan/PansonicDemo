@@ -14,7 +14,7 @@
 
 using boost::asio::ip::tcp;
 
-struct wrench_Data{
+struct wrench_Data {
     int32_t torque{};
     int32_t position{};
 };
@@ -61,8 +61,10 @@ public:
     void handle_read(tcp::socket *socket, const boost::system::error_code &error, size_t bytes_transferred) {
         if (!error) {
             std::cout << "Received data: ";
-            std::cout.write(data_, bytes_transferred);
-            std::cout << std::endl;
+            std::string s(data_);
+            std::cout << s << std::endl;
+//            std::cout.write(data_, bytes_transferred);
+//            std::cout << std::endl;
             if ((char) data_[0] == 0) {
                 std::cout << "Received Command: open" << std::endl;
                 command = "close";
@@ -121,12 +123,12 @@ public:
             }
         }
     }
-    void send(const wrench_Data&d){
-        if(socket_!= nullptr){
-            if(socket_->is_open()){
+    void send(const wrench_Data &d) {
+        if (socket_ != nullptr) {
+            if (socket_->is_open()) {
                 std::vector<char> buffer(sizeof(d));
-                std::memcpy(buffer.data(),&d,sizeof(d));
-                boost::asio::write(*socket_,boost::asio::buffer(buffer.data(),buffer.size()));
+                std::memcpy(buffer.data(), &d, sizeof(d));
+                boost::asio::write(*socket_, boost::asio::buffer(buffer.data(), buffer.size()));
             }
         }
     }

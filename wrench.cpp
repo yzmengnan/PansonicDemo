@@ -93,6 +93,8 @@ int main(int argc, char **argv) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(50));
                     if (no_message_numbers == 10) {
 
+                        no_message_numbers=0;
+
                         if (!isShown) {
                             std::cout << "wait for command" << std::endl;
                             isShown = true;

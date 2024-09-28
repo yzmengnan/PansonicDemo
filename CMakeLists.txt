@@ -14,7 +14,7 @@ target_link_libraries(driver ADS nlohmann_json::nlohmann_json ws2_32 wsock32)
 add_executable(Catch catch.cpp)
 target_link_libraries(Catch driver)
 
-add_executable(Wrench catch.cpp)
+add_executable(Wrench wrench.cpp)
 target_link_libraries(Wrench driver)
 
 add_executable(Jogging continuousJogging.cpp)

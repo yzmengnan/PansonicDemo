@@ -17,6 +17,7 @@ using boost::asio::ip::tcp;
 struct wrench_Data {
     int32_t torque{};
     int32_t position{};
+    int32_t velocity{};
 };
 
 class AsyncTcpServer {

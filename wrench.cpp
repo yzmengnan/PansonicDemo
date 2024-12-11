@@ -62,52 +62,50 @@ int main(int argc, char **argv) {
             asyncTcp = new AsyncTcpServer(IO, 10020);
             std::thread thread_IO([&]() { IO.run(); });
             static bool isShown = false;
-            static bool isDisabled = false;
             int no_message_numbers = 0;
+
             while (true) {
                 if (asyncTcp->command == "rotate_l") {
+                    no_message_numbers=0;
                     std::cout << "rotate_l" << std::endl;
                     isShown = false;
                     m->ENABLE();
-                    m->setMaxSpeed({6000});
-                    m->motionPT({500});
+                    m->setMaxSpeed({1000});
+                    m->motionPT({800});
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
                     asyncTcp->command = {};
-                    isDisabled = false;
                 } else if (asyncTcp->command == "rotate_r") {
+                    no_message_numbers=0;
                     std::cout << "rotate_r" << std::endl;
                     isShown = false;
                     m->ENABLE();
-                    m->setMaxSpeed({6000});
-                    m->motionPT({-500});
+                    m->setMaxSpeed({1000});
+                    m->motionPT({-800});
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
                     asyncTcp->command = {};
-                    isDisabled = false;
                 } else if (asyncTcp->command == "disable") {
                     isShown = false;
                     m->DISABLE();
                     asyncTcp->command = {};
-                    isDisabled = true;
                 } else {
                     no_message_numbers++;
                     std::this_thread::sleep_for(std::chrono::milliseconds(50));
                     if (no_message_numbers == 10) {
-
                         no_message_numbers=0;
+                        m->motionPT({0});
 
                         if (!isShown) {
                             std::cout << "wait for command" << std::endl;
                             isShown = true;
                         }
-
-                        if (!isDisabled) m->motionPT({0});
                     }
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
                 auto t_value = m->getTorque()[0];
                 auto p_value = m->getPosition()[0];
-                wrench_Data w = {t_value, p_value};
+                auto v_value = m->getVelocity()[0];
+                wrench_Data w = {t_value, p_value,v_value};
                 asyncTcp->send(w);
                 //clear the position
                 if (asyncTcp->command == "clear") {}

@@ -228,6 +228,12 @@ std::vector<int> DRIVE::ARM_DRIVE::getTorque() {
     return res;
 }
 
+std::vector<int> DRIVE::ARM_DRIVE::getVelocity() {
+    std::vector<int> res;
+    for (const auto &d: Rx) { res.push_back(d.actual_velocity); }
+    return res;
+}
+
 void DRIVE::ARM_DRIVE::HALT(bool halt) {
     if (halt) {
         for (auto &d: Tx) { d.control_word |= 0b100000000; }

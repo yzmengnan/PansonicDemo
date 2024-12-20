@@ -37,14 +37,14 @@ namespace TASK {
             std::cout << "torque wrench built" << std::endl;
             limit_max = LIMIT::max;
             limit_min = LIMIT::min;
-            torque_dir_0 = 300;
+            torque_dir_0 = 800;
             torque_dir_1 = -1000;
         }
         explicit torque_wrench(std::shared_ptr<DRIVE::ARM_DRIVE> m_ptr) : task(m_ptr) {
             std::cout << "torque wrench built" << std::endl;
             limit_max = LIMIT::max;
             limit_min = LIMIT::min;
-            torque_dir_0 = 300;
+            torque_dir_0 = 800;
             torque_dir_1 = -1000;
         }
         torque_wrench(std::shared_ptr<DRIVE::ARM_DRIVE> m_ptr, int a, int b, short c, short d) : task(m_ptr) {
@@ -59,13 +59,13 @@ namespace TASK {
 
         //move cw
         int move_dir_0() {
-            m->setMaxSpeed({2000});
+            m->setMaxSpeed({6000});
             short torque_value{400};
             auto last_position = m->getPosition()[0];
             size_t counts{};
             while (isReached(DIR::forward)) {
                 counts += (m->motionPT({torque_value}) != 0);
-                if (torque_value <= this->torque_dir_0) { torque_value += 20; }
+                if (torque_value <= this->torque_dir_0) { torque_value += 100; }
                 counts += abs(last_position - m->getPosition()[0]) <= 1000;
                 last_position = m->getPosition()[0];
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -82,14 +82,14 @@ namespace TASK {
 
         //move ccw
         int move_dir_1() {
-            m->setMaxSpeed({2000});
-            short torque_value{-200};
+            m->setMaxSpeed({6000});
+            short torque_value{-400};
             auto last_position = m->getPosition()[0];
             size_t counts{};
             while (isReached(DIR::backward)) {
                 m->motionPT({torque_value});
                 if (torque_value >= this->torque_dir_1) {
-                    torque_value -= 20;
+                    torque_value -= 100;
                 }
                 counts += abs(last_position - m->getPosition()[0]) <= 1000;
                 last_position = m->getPosition()[0];

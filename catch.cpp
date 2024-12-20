@@ -11,6 +11,9 @@
 using json = nlohmann::json;
 
 
+std::chrono::milliseconds duration_long(static_cast<size_t>(100));
+std::chrono::milliseconds duration_short(static_cast<size_t>(20));
+
 int main(int argc, char **argv) {
     std::string name;
     if (argc >= 3) {
@@ -68,7 +71,7 @@ int main(int argc, char **argv) {
                     asyncTcp->send(3);
                     std::cout << "close" << std::endl;
                     m->ENABLE();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                    std::this_thread::sleep_for(duration_long);
                     auto res = t.move_dir_0();
                     if (res != 0) {
                         asyncTcp->send(0);
@@ -81,7 +84,7 @@ int main(int argc, char **argv) {
                     asyncTcp->send(3);
                     std::cout << "open" << std::endl;
                     m->ENABLE();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                    std::this_thread::sleep_for(duration_long);
                     auto res = t.move_dir_1();
                     if (res != 0) {
                         asyncTcp->send(1);
@@ -90,13 +93,13 @@ int main(int argc, char **argv) {
                     }
                     asyncTcp->command = {};
                 } else {
-                                  //asyncTcp.send(4);
+                    //asyncTcp.send(4);
                     if (!isShown) {
                         std::cout << "wait for command" << std::endl;
                         isShown = true;
                     }
                     m->DISABLE();
-                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                    std::this_thread::sleep_for(duration_long);
                     //                std::cout<<"command "<<asyncTcp.command<<std::endl;
                 }
             }
@@ -113,14 +116,14 @@ int main(int argc, char **argv) {
                     m->ENABLE();
                     m->setMaxSpeed({6000});
                     m->motionPT({500});
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    std::this_thread::sleep_for(duration_long);
                     asyncTcp->command = {};
                 } else if (asyncTcp->command == "rotate_r") {
                     isShown = false;
                     m->ENABLE();
                     m->setMaxSpeed({6000});
                     m->motionPT({-500});
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    std::this_thread::sleep_for(duration_long);
                     asyncTcp->command = {};
                 } else if (asyncTcp->command == "disable") {
                     isShown = false;
@@ -133,7 +136,7 @@ int main(int argc, char **argv) {
                     }
                     m->motionPT({0});
                 }
-                std::this_thread::sleep_for(std::chrono::milliseconds(20));
+                std::this_thread::sleep_for(duration_short);
                 //                string value = std::to_string(m->getTorque()[0]);
 
                 auto t_value = m->getTorque()[0];

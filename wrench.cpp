@@ -10,6 +10,8 @@
 #include <fstream>
 using json = nlohmann::json;
 
+std::chrono::milliseconds duration_long(static_cast<size_t>(100));
+std::chrono::milliseconds duration_short(static_cast<size_t>(20));
 
 int main(int argc, char **argv) {
     std::string name;
@@ -66,22 +68,22 @@ int main(int argc, char **argv) {
 
             while (true) {
                 if (asyncTcp->command == "rotate_l") {
-                    no_message_numbers=0;
+                    no_message_numbers = 0;
                     std::cout << "rotate_l" << std::endl;
                     isShown = false;
                     m->ENABLE();
                     m->setMaxSpeed({1000});
-                    m->motionPT({800});
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    m->motionPT({(int16_t) asyncTcp->data2_torque});
+                    std::this_thread::sleep_for(duration_long);
                     asyncTcp->command = {};
                 } else if (asyncTcp->command == "rotate_r") {
-                    no_message_numbers=0;
+                    no_message_numbers = 0;
                     std::cout << "rotate_r" << std::endl;
                     isShown = false;
                     m->ENABLE();
                     m->setMaxSpeed({1000});
-                    m->motionPT({-800});
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                    m->motionPT({(int16_t) asyncTcp->data2_torque});
+                    std::this_thread::sleep_for(duration_long);
                     asyncTcp->command = {};
                 } else if (asyncTcp->command == "disable") {
                     isShown = false;
@@ -89,9 +91,9 @@ int main(int argc, char **argv) {
                     asyncTcp->command = {};
                 } else {
                     no_message_numbers++;
-                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                    std::this_thread::sleep_for(duration_short);
                     if (no_message_numbers == 10) {
-                        no_message_numbers=0;
+                        no_message_numbers = 0;
                         m->motionPT({0});
 
                         if (!isShown) {
@@ -100,12 +102,12 @@ int main(int argc, char **argv) {
                         }
                     }
                 }
-                std::this_thread::sleep_for(std::chrono::milliseconds(20));
+                std::this_thread::sleep_for(duration_short);
 
                 auto t_value = m->getTorque()[0];
                 auto p_value = m->getPosition()[0];
                 auto v_value = m->getVelocity()[0];
-                wrench_Data w = {t_value, p_value,v_value};
+                wrench_Data w = {t_value, p_value, v_value};
                 asyncTcp->send(w);
                 //clear the position
                 if (asyncTcp->command == "clear") {}

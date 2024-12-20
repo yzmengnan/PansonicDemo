@@ -23,11 +23,15 @@ struct wrench_Data {
 class AsyncTcpServer {
 public:
     std::string command{-1};
+    int32_t data1;
+    int32_t data2_torque;
 
 public:
     AsyncTcpServer(boost::asio::io_context &io_context, short port)
         : acceptor_(io_context, tcp::endpoint(tcp::v4(), port)) {
         command = {};
+        data1 = {};
+        data2_torque = {};
         socket_ = nullptr;
         start_accept();
     }
@@ -64,8 +68,33 @@ public:
             std::cout << "Received data: ";
             std::string s(data_);
             std::cout << s << std::endl;
-//            std::cout.write(data_, bytes_transferred);
-//            std::cout << std::endl;
+            //            std::cout.write(data_, bytes_transferred);
+            //            std::cout << std::endl;
+
+            //new
+            memcpy(&(this->data1), &data_[0], 4);
+            memcpy(&(this->data2_torque), &data_[4], 4);
+            if (this->data1 == 0) {
+                std::cout << "Received Command: open" << std::endl;
+                command = "close";
+            } else if (this->data1 == 1) {
+                std::cout << "Received Command: close" << std::endl;
+                command = "open";
+            } else if (data1 == 2) {
+                command = "rotate_r";
+            } else if (data1 == 3) {
+                command = "rotate_l";
+            } else if (data1 == 4) {
+                command = "clear";
+            } else if (data1 == 5) {
+                command = "disable";
+            } else {
+                command = {};
+            }
+
+
+            // old
+            /*
             if ((char) data_[0] == 0) {
                 std::cout << "Received Command: open" << std::endl;
                 command = "close";
@@ -83,6 +112,7 @@ public:
             } else {
                 command = {};
             }
+             */
 
             // 继续异步读取数据
             socket->async_read_some(boost::asio::buffer(data_, max_length),

@@ -139,7 +139,7 @@ namespace ADS_DATA {
         uint32_t max_velocity = 3000;
         int8_t operation_mode = 1;
         int16_t target_torque = 0;
-        uint16_t max_torque = 1500;
+        uint16_t max_torque = 5000;
         uint16_t null_space = 0;
     };
     struct servo_rx {

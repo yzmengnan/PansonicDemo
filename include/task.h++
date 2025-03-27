@@ -22,6 +22,7 @@ namespace TASK {
 
     protected:
         std::shared_ptr<DRIVE::axis_drive> m;
+        bool is_in_task{};
     };
 
     using tw = class torque_wrench : public task {
@@ -40,6 +41,7 @@ namespace TASK {
             limit_min = LIMIT::min;
             torque_dir_0 = 800;
             torque_dir_1 = -1000;
+            is_in_task = false;
         }
         explicit torque_wrench(std::shared_ptr<DRIVE::axis_drive> m_ptr) : task(m_ptr) {
             std::cout << "torque wrench built" << std::endl;
@@ -47,6 +49,7 @@ namespace TASK {
             limit_min = LIMIT::min;
             torque_dir_0 = 800;
             torque_dir_1 = -1000;
+            is_in_task = false;
         }
         torque_wrench(std::shared_ptr<DRIVE::axis_drive> m_ptr, int a, int b, short c, short d) : task(m_ptr) {
             std::cout << "torque wrench built" << std::endl;
@@ -54,6 +57,7 @@ namespace TASK {
             limit_min = b;
             torque_dir_0 = c;
             torque_dir_1 = d;
+            is_in_task = false;
         }
 
         ~torque_wrench() { std::cout << "torque wrench tool delete" << std::endl; }
@@ -89,9 +93,7 @@ namespace TASK {
             size_t counts{};
             while (isReached(DIR::backward)) {
                 m->motionPT({torque_value});
-                if (torque_value >= this->torque_dir_1) {
-                    torque_value -= 100;
-                }
+                if (torque_value >= this->torque_dir_1) { torque_value -= 100; }
                 counts += abs(last_position - m->getPosition()[0]) <= 1000;
                 last_position = m->getPosition()[0];
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -106,8 +108,30 @@ namespace TASK {
             return 0;
         }
 
-        bool isReached(DIR dir) {
+        bool isReached(DIR dir) const {
             return !dir ? this->m->getPosition()[0] < this->limit_max : this->m->getPosition()[0] > this->limit_min;
+        }
+
+        void ApplyOscillatingTorque(const bool &enableFlag, const std::chrono::milliseconds s) {
+            using namespace std::chrono_literals;
+            auto f = [&]() {
+                if (this->m->ENABLE() != 0 || is_in_task == true) return;
+
+                this->is_in_task = true;
+
+                while (enableFlag) {
+                    this->m->motionPT({1500});
+                    std::this_thread::sleep_for(s);
+                    this->m->motionPT({-1500});
+                    std::this_thread::sleep_for(s);
+                }
+
+                this->is_in_task = false;
+                this->m->DISABLE();
+            };
+
+            std::thread t(f);
+            t.detach();
         }
     };
 }// namespace TASK

@@ -14,7 +14,6 @@
 int main(int argc, char **argv) {
 
 
-
     std::string name = "exe";
 
     auto mut = process_mutex(name);
@@ -35,9 +34,12 @@ int main(int argc, char **argv) {
 
     m->ENABLE();
     m->setMaxSpeed({2000});
-    m->motionPT({200});
 
-    SLEEP_MS(10000);
+    auto t = TASK::torque_wrench(m);
+    bool start = true;
+    t.ApplyOscillatingTorque(start, 300ms);
+    SLEEP_MS(1000);
+    start = false;
+    std::this_thread::sleep_for(3s);
     m->DISABLE();
-
 }

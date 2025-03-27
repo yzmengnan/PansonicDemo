@@ -85,13 +85,13 @@ namespace ADS {
         ads_addr &addr;
     };
 
-    class ARM_ADS : public ADS_COM<std::shared_ptr<ADS_DATA::ARM_DATA>> {
+    class axis_ads : public ADS_COM<std::shared_ptr<ADS_DATA::ARM_DATA>> {
     public:
         // 内部建立一个数据对象
-        ARM_ADS();
+        axis_ads();
 
         // 使用外部数据
-        explicit ARM_ADS(std::shared_ptr<ADS_DATA::ARM_DATA> &dataPtr);
+        explicit axis_ads(std::shared_ptr<ADS_DATA::ARM_DATA> &dataPtr);
 
         void startSYNC();
 

@@ -27,9 +27,9 @@ int main(int argc, char **argv) {
                   << std::endl;
         i.close();
     }
-    auto arm_ads = new ADS::ARM_ADS();
+    auto arm_ads = new ADS::axis_ads();
     arm_ads->setPort(port);
-    auto m = DRIVE::ARM_DRIVE(arm_ads);
+    auto m = DRIVE::axis_drive(arm_ads);
     m.startSYNC();
     Sleep(100);
     m.ENABLE();

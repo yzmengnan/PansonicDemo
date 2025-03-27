@@ -12,19 +12,19 @@
 using namespace std;
 
 namespace DRIVE {
-    class ARM_DRIVE {
+    class axis_drive {
     private:
         enum OP_MODE { PP = 1, PV = 3, PT = 4 };
 
     public:
-        ARM_DRIVE() = delete;
+        axis_drive() = delete;
 
-        ~ARM_DRIVE() {
+        ~axis_drive() {
             std::cerr << "ARM DRIVE QUIT!" << std::endl;
             this->DISABLE();
         }
 
-        explicit ARM_DRIVE(ADS::ARM_ADS *ads);
+        explicit axis_drive(ADS::axis_ads *ads);
 
         void startSYNC() {
             this->ads_Handle->startSYNC();
@@ -43,7 +43,7 @@ namespace DRIVE {
 
         void setMaxSpeed(initializer_list<int> rpm);
 
-        int setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode);
+        int setOperationMode(const DRIVE::axis_drive::OP_MODE &pMode);
 
         void servoBreak(bool b);
 
@@ -60,7 +60,7 @@ namespace DRIVE {
         std::vector<int> getVelocity();
 
     private:
-        ADS::ARM_ADS *ads_Handle;
+        ADS::axis_ads *ads_Handle;
         bool syncFlag;
         bool enableFlag;
         int mode;

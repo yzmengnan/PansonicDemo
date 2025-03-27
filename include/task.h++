@@ -11,16 +11,17 @@ namespace TASK {
     class task {
     public:
         task() {
-            auto arm_ads = new ADS::ARM_ADS();
-            m = std::make_shared<DRIVE::ARM_DRIVE>(arm_ads);
+            auto ads = new ADS::axis_ads();
+            auto arm_ads = ads;
+            m = std::make_shared<DRIVE::axis_drive>(arm_ads);
         }
 
-        explicit task(std::shared_ptr<DRIVE::ARM_DRIVE> m) : m{m} {}
+        explicit task(std::shared_ptr<DRIVE::axis_drive> m) : m{m} {}
 
         ~task() { std::cout << "task object delete" << std::endl; }
 
     protected:
-        std::shared_ptr<DRIVE::ARM_DRIVE> m;
+        std::shared_ptr<DRIVE::axis_drive> m;
     };
 
     using tw = class torque_wrench : public task {
@@ -40,14 +41,14 @@ namespace TASK {
             torque_dir_0 = 800;
             torque_dir_1 = -1000;
         }
-        explicit torque_wrench(std::shared_ptr<DRIVE::ARM_DRIVE> m_ptr) : task(m_ptr) {
+        explicit torque_wrench(std::shared_ptr<DRIVE::axis_drive> m_ptr) : task(m_ptr) {
             std::cout << "torque wrench built" << std::endl;
             limit_max = LIMIT::max;
             limit_min = LIMIT::min;
             torque_dir_0 = 800;
             torque_dir_1 = -1000;
         }
-        torque_wrench(std::shared_ptr<DRIVE::ARM_DRIVE> m_ptr, int a, int b, short c, short d) : task(m_ptr) {
+        torque_wrench(std::shared_ptr<DRIVE::axis_drive> m_ptr, int a, int b, short c, short d) : task(m_ptr) {
             std::cout << "torque wrench built" << std::endl;
             limit_max = a;
             limit_min = b;

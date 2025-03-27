@@ -33,12 +33,12 @@ int main(int argc, char **argv) {
         std::cerr << "error! json config file not founded" << std::endl;
         return -1;
     }
-    auto arm_ads = new ADS::ARM_ADS();
+    auto arm_ads = new ADS::axis_ads();
     arm_ads->setPort(plc_number);
     //set address
     //    arm_ads->setAddress(0,0,0,0);
 
-    auto m = std::make_shared<DRIVE::ARM_DRIVE>(arm_ads);
+    auto m = std::make_shared<DRIVE::axis_drive>(arm_ads);
     //start sync data
     m->startSYNC();
     Sleep(1000);

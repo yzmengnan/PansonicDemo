@@ -44,18 +44,18 @@ namespace ADS {
         return nErr;
     }
 
-    ARM_ADS::ARM_ADS() {
+    axis_ads::axis_ads() {
         data = std::make_shared<ADS_DATA::ARM_DATA>();
         getPort(addr, data);
         m = new std::mutex;
     }
 
-    ARM_ADS::ARM_ADS(shared_ptr<ADS_DATA::ARM_DATA> &dataPtr) {
+    axis_ads::axis_ads(shared_ptr<ADS_DATA::ARM_DATA> &dataPtr) {
         data = dataPtr;
         getPort(addr, data);
     }
 
-    void ARM_ADS::startSYNC() {
+    void axis_ads::startSYNC() {
         t1 = std::thread([&]() {
             while (true) {
                 //                std::lock_guard<std::mutex> guard(*m);

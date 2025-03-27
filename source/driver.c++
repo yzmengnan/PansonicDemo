@@ -5,7 +5,7 @@
 #include "driver.h++"
 #include <format>
 
-DRIVE::ARM_DRIVE::ARM_DRIVE(ADS::ARM_ADS *ads)
+DRIVE::axis_drive::axis_drive(ADS::axis_ads *ads)
     : ads_Handle{ads}, Tx{ads_Handle->data->tx_data}, Rx{ads_Handle->data->rx_data} {
     syncFlag = false;
     enableFlag = false;
@@ -13,7 +13,7 @@ DRIVE::ARM_DRIVE::ARM_DRIVE(ADS::ARM_ADS *ads)
     cout << "ARM DRIVE BUILT!" << endl;
 }
 
-bool DRIVE::ARM_DRIVE::clearFault() {
+bool DRIVE::axis_drive::clearFault() {
     for (auto &c: this->Tx) { c.control_word |= 0x80; }
     this->ads_Handle->write();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -26,7 +26,7 @@ bool DRIVE::ARM_DRIVE::clearFault() {
     return cnts >= 1;
 }
 
-int DRIVE::ARM_DRIVE::ENABLE() {
+int DRIVE::axis_drive::ENABLE() {
     if (!syncFlag) {
         cerr << "please start transform data" << endl;
         return -1003;
@@ -93,7 +93,7 @@ int DRIVE::ARM_DRIVE::ENABLE() {
     return -1002;
 }
 
-void DRIVE::ARM_DRIVE::DISABLE() {
+void DRIVE::axis_drive::DISABLE() {
     servoBreak(false);
     this->HALT(true);
     mode = 0;
@@ -106,7 +106,7 @@ void DRIVE::ARM_DRIVE::DISABLE() {
     enableFlag = false;
 }
 
-int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
+int DRIVE::axis_drive::setOperationMode(const DRIVE::axis_drive::OP_MODE &pMode) {
     static int set_try_counts{};
     if (mode == pMode) { return 0; }
     if (this->enableFlag) { this->DISABLE(); }
@@ -134,9 +134,9 @@ int DRIVE::ARM_DRIVE::setOperationMode(const DRIVE::ARM_DRIVE::OP_MODE &pMode) {
     }
 }
 
-void DRIVE::ARM_DRIVE::servoBreak(bool b) {}
+void DRIVE::axis_drive::servoBreak(bool b) {}
 
-int DRIVE::ARM_DRIVE::motionPB(initializer_list<int32_t> targetPosition) {
+int DRIVE::axis_drive::motionPB(initializer_list<int32_t> targetPosition) {
     auto err = setOperationMode(OP_MODE::PP);
     if (err == 0) {
         size_t i{};
@@ -164,7 +164,7 @@ int DRIVE::ARM_DRIVE::motionPB(initializer_list<int32_t> targetPosition) {
     }
 }
 
-int DRIVE::ARM_DRIVE::motionPT(initializer_list<int16_t> targetTorque) {
+int DRIVE::axis_drive::motionPT(initializer_list<int16_t> targetTorque) {
     //check servo status
     for (const auto &s: Rx) {
         if ((s.status_word & 0b1000) >> 3) {
@@ -187,7 +187,7 @@ int DRIVE::ARM_DRIVE::motionPT(initializer_list<int16_t> targetTorque) {
     }
 }
 
-int DRIVE::ARM_DRIVE::motionPV(initializer_list<int32_t> targetVelocity) {
+int DRIVE::axis_drive::motionPV(initializer_list<int32_t> targetVelocity) {
     auto err = setOperationMode((OP_MODE::PV));
     if (err == 0) {
         size_t i{};
@@ -201,14 +201,14 @@ int DRIVE::ARM_DRIVE::motionPV(initializer_list<int32_t> targetVelocity) {
     }
 }
 
-void DRIVE::ARM_DRIVE::setProfileVelocity(initializer_list<int> rpm) {
+void DRIVE::axis_drive::setProfileVelocity(initializer_list<int> rpm) {
     std::vector<int> rpm_pulses = {};
     for (const auto &r: rpm) { rpm_pulses.push_back(static_cast<int>((8388608 / 60.0f) * (float) r)); }
     size_t i{};
     for (auto &r: Tx) { r.profile_velocity = rpm_pulses[i++]; }
 }
 
-void DRIVE::ARM_DRIVE::setMaxSpeed(initializer_list<int> rpm) {
+void DRIVE::axis_drive::setMaxSpeed(initializer_list<int> rpm) {
     size_t i{};
     for (const auto &r: rpm) {
         Tx[i++].max_velocity = r;
@@ -216,25 +216,25 @@ void DRIVE::ARM_DRIVE::setMaxSpeed(initializer_list<int> rpm) {
     }
 }
 
-std::vector<int> DRIVE::ARM_DRIVE::getPosition() {
+std::vector<int> DRIVE::axis_drive::getPosition() {
     std::vector<int> res;
     for (const auto &d: Rx) { res.push_back(d.actual_position); }
     return res;
 }
 
-std::vector<int> DRIVE::ARM_DRIVE::getTorque() {
+std::vector<int> DRIVE::axis_drive::getTorque() {
     std::vector<int> res;
     for (const auto &d: Rx) { res.push_back(d.actual_torque); }
     return res;
 }
 
-std::vector<int> DRIVE::ARM_DRIVE::getVelocity() {
+std::vector<int> DRIVE::axis_drive::getVelocity() {
     std::vector<int> res;
     for (const auto &d: Rx) { res.push_back(d.actual_velocity); }
     return res;
 }
 
-void DRIVE::ARM_DRIVE::HALT(bool halt) {
+void DRIVE::axis_drive::HALT(bool halt) {
     if (halt) {
         for (auto &d: Tx) { d.control_word |= 0b100000000; }
     } else {

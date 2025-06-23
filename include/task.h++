@@ -27,7 +27,7 @@ namespace TASK {
 
     using tw = class torque_wrench : public task {
     private:
-        enum LIMIT { max = -16134627, min = -7838708 };
+        enum LIMIT { max =216134627, min = -38708 };
         enum DIR { forward = false, backward = true };
         int limit_max{};
         int limit_min{};
@@ -39,7 +39,7 @@ namespace TASK {
             std::cout << "torque wrench built" << std::endl;
             limit_max = LIMIT::max;
             limit_min = LIMIT::min;
-            torque_dir_0 = 800;
+            torque_dir_0 = 1500;
             torque_dir_1 = -1000;
             is_in_task = false;
         }
@@ -47,8 +47,8 @@ namespace TASK {
             std::cout << "torque wrench built" << std::endl;
             limit_max = LIMIT::max;
             limit_min = LIMIT::min;
-            torque_dir_0 = 800;
-            torque_dir_1 = -1000;
+            torque_dir_0 = 1500;
+            torque_dir_1 = -800;
             is_in_task = false;
         }
         torque_wrench(std::shared_ptr<DRIVE::axis_drive> m_ptr, int a, int b, short c, short d) : task(m_ptr) {
@@ -64,7 +64,7 @@ namespace TASK {
 
         //move cw
         int move_dir_0() {
-            m->setMaxSpeed({6000});
+            //m->setMaxSpeed({6000});
             short torque_value{400};
             auto last_position = m->getPosition()[0];
             size_t counts{};
@@ -87,7 +87,7 @@ namespace TASK {
 
         //move ccw
         int move_dir_1() {
-            m->setMaxSpeed({6000});
+            //m->setMaxSpeed({6000});
             short torque_value{-400};
             auto last_position = m->getPosition()[0];
             size_t counts{};
@@ -120,9 +120,9 @@ namespace TASK {
                 this->is_in_task = true;
 
                 while (enableFlag) {
-                    this->m->motionPT({1500});
+                    this->m->motionPT({300});
                     std::this_thread::sleep_for(s);
-                    this->m->motionPT({-1500});
+                    this->m->motionPT({-300});
                     std::this_thread::sleep_for(s);
                 }
 

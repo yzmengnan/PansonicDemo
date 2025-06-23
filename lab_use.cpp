@@ -10,6 +10,7 @@
 
 #define PLC 854
 #define SLEEP_MS(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms))
+#define SLEEP_S(s) std::this_thread::sleep_for(std::chrono::seconds(s))
 
 int main(int argc, char **argv) {
 
@@ -37,9 +38,13 @@ int main(int argc, char **argv) {
 
     auto t = TASK::torque_wrench(m);
     bool start = true;
-    t.ApplyOscillatingTorque(start, 300ms);
-    SLEEP_MS(1000);
+    t.ApplyOscillatingTorque(start, 3s);
+    // t.move_dir_1();
+    // t.move_dir_0();
+    // SLEEP_MS(1000);
+    SLEEP_S(30);
+    // for(;;)
+    // {}
     start = false;
-    std::this_thread::sleep_for(3s);
     m->DISABLE();
 }

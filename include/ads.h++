@@ -136,8 +136,8 @@ namespace ADS_DATA {
         int32_t target_position = 0;
         int32_t target_velocity = 0;
         uint32_t profile_velocity = 0x7fffffff;
-        uint32_t max_velocity = 3000;
-        int8_t operation_mode = 1;
+        uint32_t max_velocity = 6000;
+        int8_t operation_mode = 0;
         int16_t target_torque = 0;
         uint16_t max_torque = 5000;
         uint16_t null_space = 0;
